@@ -1,8 +1,21 @@
+#ifndef PARSER
+#define PARSER
+
+/**
+ * Inclui:
+ *  - string
+ */
+#include <string>
 /**
  * Inclui:
  *  - Vector
  */
 #include <vector>
+/**
+ * Inclui:
+ *  - ifstream
+ */
+#include <fstream>
 /**
  * Funcoes de Utilidades
  */
@@ -20,6 +33,15 @@ class Parser
         Parser(ifstream &myNet)
         {
             setup(myNet);
+        }
+
+        /**
+         * Retorna lista de todos os elementos da net list devidamente
+         * parseados.
+         */
+        vector<vector<string> > getElements()
+        {
+            return listOfElements;
         }
 
     private:
@@ -46,3 +68,5 @@ class Parser
             }
         }
 };
+
+#endif

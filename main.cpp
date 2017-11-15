@@ -9,12 +9,7 @@
  *  - system
  */
 #include <cstdlib>
-/**
- * Inclui:
- *  - string
- */
-#include <string>
-/**
+ /**
  * Inclui:
  *  - ifstream
  */
@@ -23,6 +18,10 @@
  * Classe parceadora de Net List
  */
 #include "parser.cpp"
+/**
+ * Fabrica construtora dos modelos dos elementos
+ */
+#include "factory.cpp"
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -53,7 +52,16 @@ int main()
         myNet.open(fileName);
         if (myNet.is_open()) {
             repeat = false;
-            new Parser(myNet);
         }
     } while (repeat == true);
+
+    /**
+     * Lista de elementos a serem construidos
+     * @param  myNet Arquivo da netlist
+     * @return       Vetor de vetores devidamente separados com os componentes
+     */
+    Parser* elementsList = new Parser(myNet);
+
+    Factory* components = new Factory(elementsList->getElements());
+
 }

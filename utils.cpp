@@ -1,3 +1,5 @@
+#ifndef UTILS
+#define UTILS
 /**
  * Inclui:
  *  - istringstream
@@ -26,3 +28,5 @@ const vector<string> explode(const string& phrase, char delim)
 
     return result;
 }
+
+#endif
