@@ -17,7 +17,9 @@ class Chave : public Components4t
          */
         Chave(string n, int a, int b, int c, int d, double on, double off, double r) : Components4t(n, a, b, c, d)
         {
-            setGanho(g);
+            setGOn(on);
+            setGOff(off);
+            setRef(r);
         }
 
         /**
