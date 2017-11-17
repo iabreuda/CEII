@@ -63,5 +63,4 @@ int main()
     Parser* elementsList = new Parser(myNet);
 
     Factory* components = new Factory(elementsList->getElements());
-
 }

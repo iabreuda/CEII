@@ -61,10 +61,18 @@ class Parser
         void setup(ifstream &myNet)
         {
             string line;
+            int lineNumber = 1;
             while (myNet.good()) {
                 getline(myNet, line);
-                auto componentLine = explode(line, ' ');
-                listOfElements.push_back(componentLine);
+                /**
+                 * Por default a primeira linha e o nome do circuito
+                 * queremos discartar ela
+                 */
+                if (lineNumber > 1) {
+                    auto componentLine = explode(line, ' ');
+                    listOfElements.push_back(componentLine);
+                }
+                lineNumber++;
             }
         }
 };
