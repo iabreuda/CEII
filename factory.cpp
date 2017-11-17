@@ -53,7 +53,30 @@
  * Modelo de transformador
  */
 #include "chave.cpp"
-
+/**
+ * Modelo de fonte de tensao dc
+ */
+#include "tensaodc.cpp"
+/**
+ * Modelo de fonte de corrente dc
+ */
+#include "correntedc.cpp"
+/**
+ * Modelo de fonte de corrente senoidal
+ */
+#include "correntesenoidal.cpp"
+/**
+ * Modelo de fonte de tensao senoidal
+ */
+#include "tensaosenoidal.cpp"
+/**
+ * Modelo de fonte de corrente pulsada
+ */
+#include "correntepulso.cpp"
+/**
+ * Modelo de fonte de tensao pulsada
+ */
+#include "tensaopulso.cpp"
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -124,6 +147,7 @@ class Factory
         double passo;
         double passoPonto;
         string metodo;
+        double tempo = 0;
 
         vector<Components*> componentes;
         void setup(vector<vector<string> > listOfElements)
@@ -253,6 +277,92 @@ class Factory
                     stod(element[7])
                 );
                 componentes.push_back(component);
+            } else if (type == "V") {
+                if ((element[3]) == "DC") {
+                    TensaoDC *component = new TensaoDC(
+                        element[0],
+                        stoi(element[1]),
+                        stoi(element[2]),
+                        stod(element[4])
+                    );
+                    componentes.push_back(component);
+                } else if ((element[3]) == "SIN") {
+                    TensaoSenoidal *component = new TensaoSenoidal(
+                        element[0],
+                        stoi(element[1]),
+                        stoi(element[2]),
+                        stod(element[4]),
+                        stod(element[5]),
+                        stod(element[6]),
+                        stod(element[7]),
+                        stod(element[8]),
+                        stod(element[9]),
+                        stod(element[10]),
+                        tempo
+                    );
+                    componentes.push_back(component);
+                } else if ((element[3]) == "PULSO") {
+                    TensaoPulso *component = new TensaoPulso(
+                        element[0],
+                        stoi(element[1]),
+                        stoi(element[2]),
+                        stod(element[4]),
+                        stod(element[5]),
+                        stod(element[6]),
+                        stod(element[7]),
+                        stod(element[8]),
+                        stod(element[9]),
+                        stod(element[10]),
+                        stod(element[11]),
+                        tempo
+                    );
+                    componentes.push_back(component);
+                } else {
+                    throw invalid_argument("Tipo de Fonte desconhecida");
+                }
+            } else if (type == "I") {
+                if ((element[3]) == "DC") {
+                    CorrenteDC *component = new CorrenteDC(
+                        element[0],
+                        stoi(element[1]),
+                        stoi(element[2]),
+                        stod(element[4])
+                    );
+                    componentes.push_back(component);
+                } else if ((element[3]) == "SIN") {
+                    CorrenteSenoidal *component = new CorrenteSenoidal(
+                        element[0],
+                        stoi(element[1]),
+                        stoi(element[2]),
+                        stod(element[4]),
+                        stod(element[5]),
+                        stod(element[6]),
+                        stod(element[7]),
+                        stod(element[8]),
+                        stod(element[9]),
+                        stod(element[10]),
+                        tempo
+                    );
+                    componentes.push_back(component);
+                } else if ((element[3]) == "PULSO") {
+                    CorrentePulso *component = new CorrentePulso(
+                        element[0],
+                        stoi(element[1]),
+                        stoi(element[2]),
+                        stod(element[4]),
+                        stod(element[5]),
+                        stod(element[6]),
+                        stod(element[7]),
+                        stod(element[8]),
+                        stod(element[9]),
+                        stod(element[10]),
+                        stod(element[11]),
+                        tempo
+                    );
+                    componentes.push_back(component);
+                } else {
+                    throw invalid_argument("Tipo de Fonte desconhecida");
+                }
             } else if (type == ".") {
                 setTempoFinal(stod(element[1]));
                 setPasso(stod(element[2]));
