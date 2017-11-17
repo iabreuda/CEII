@@ -49,6 +49,10 @@
  * Modelo de transformador
  */
 #include "transformador.cpp"
+/**
+ * Modelo de transformador
+ */
+#include "chave.cpp"
 
 
 /* Necessario para nao precisar escrever std:: */
