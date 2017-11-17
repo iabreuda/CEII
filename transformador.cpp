@@ -15,18 +15,18 @@ class Transformador : public Components4t
         /**
          * Construtor
          */
-        Transformador(string n, int a, int b, int c, int d, double n) : Components4t(n, a, b, c, d)
+        Transformador(string n, int a, int b, int c, int d, double param) : Components4t(n, a, b, c, d)
         {
-            setN(n);
+            setN(param);
         }
 
         /**
          * Define n do transformador
          * @param n valor de N
          */
-        void setN(double n)
+        void setN(double param)
         {
-            N = n;
+            N = param;
         }
 
         /**
