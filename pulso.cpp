@@ -114,7 +114,7 @@ class Pulso : public FonteIndependente
          * Define o valor atual da fonte
          * no instante de tempo presente
          */
-        void setValor()
+        virtual void setValor()
         {
             //@todo
         }
@@ -138,7 +138,7 @@ class Pulso : public FonteIndependente
         /**
          * Retorna o tempo de duracao da amp 1
          */
-        double getAtraso
+        double getAtraso()
         {
             return atraso;
         }
@@ -148,7 +148,7 @@ class Pulso : public FonteIndependente
          */
         double getTempoSubida()
         {
-            reutrn tSubida;
+            return tSubida;
         }
 
         /**
@@ -237,7 +237,6 @@ class Pulso : public FonteIndependente
          * ira se repetir
          */
         double ciclo;
-
 
         /**
          * Instante de tempo atual

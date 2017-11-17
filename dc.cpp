@@ -1,5 +1,6 @@
 #ifndef DC
 #define DC
+
 /**
  * Modelo basico de fontes independentes
  */
@@ -8,13 +9,13 @@
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
 
-class DC : public FonteIndependente
+class Dc : public FonteIndependente
 {
     public:
         /**
          * Construtor
          */
-        DC(string n, int a, int b, double v) : FonteIndependente(n, a, b)
+        Dc(string n, int a, int b, double v) : FonteIndependente(n, a, b)
         {
             setValor(v);
         }

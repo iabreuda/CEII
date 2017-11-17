@@ -110,13 +110,13 @@ class Senoidal : public FonteIndependente
         /**
          * Define o valor da fonte
          */
-        void setValor()
+        virtual void setValor()
         {
             float amplitude;
             float senoide;
 
             amplitude = getAmplitude() * exp((-1 * getAmortecimento()) * (getTempo() - getAtraso()));
-            senoide = sin(2 * M_PI * getFrequencia() * (getTempo() - getAtraso()) + ((M_PI/180) * getFase()))
+            senoide = sin(2 * M_PI * getFrequencia() * (getTempo() - getAtraso()) + ((M_PI/180) * getFase()));
             valor = getNivelDC() + (amplitude * senoide);
         }
 

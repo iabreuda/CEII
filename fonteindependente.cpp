@@ -12,6 +12,11 @@ class FonteIndependente : public Components
 {
     public:
         /**
+         * Valor da fonte
+         */
+        double valor;
+
+        /**
          * Construtor
          */
         FonteIndependente(string n, int a, int b) : Components(n, a, b)
@@ -26,11 +31,10 @@ class FonteIndependente : public Components
             return valor;
         }
 
-    private:
         /**
-         * Valor da fonte
+         * Funcao abstrata que deve ser declarada nas classes filhas
          */
-        double valor = 0;
+        virtual void setValor() {};
 };
 
 #endif
