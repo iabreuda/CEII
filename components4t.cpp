@@ -11,6 +11,9 @@ using namespace std;
 class Components4t : public Components
 {
     public:
+        /**
+         * Construtor
+         */
         Components4t(string n, int a, int b, int c, int d) : Components(n, a, b)
         {
             setNome(n);
@@ -18,28 +21,48 @@ class Components4t : public Components
             setNoB(b);
         }
 
+        /**
+         * Define o no C do componente
+         * @param c no C
+         */
         void setNoC(int c)
         {
             noC = c;
         }
 
+        /**
+         * Retorna o no C
+         */
         int getNoC()
         {
             return noC;
         }
 
+        /**
+         * Define o no D do componente
+         * @param b no D
+         */
         void setNoD(int d)
         {
             noD = d;
         }
 
+        /**
+         * Retorna o no D
+         */
         int getNoD()
         {
             return noD;
         }
 
     private:
+        /**
+         * Terminal C
+         */
         int noC;
+        /**
+         * Terminal D
+         */
         int noD;
 };
 
