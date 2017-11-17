@@ -13,30 +13,43 @@
  * Modelo de resistor linear
  */
 #include "resistor.cpp"
- /**
+/**
  * Modelo de capacitor linear
  */
 #include "capacitor.cpp"
- /**
+/**
  * Modelo de resistor linear
  */
 #include "indutor.cpp"
- /**
+/**
  * Modelo de Fonte de corrente controlada por corrente
  */
 #include "correntecorrente.cpp"
- /**
+/**
  * Modelo de Fonte de corrente controlada por tensao
  */
 #include "correntetensao.cpp"
- /**
+/**
  * Modelo de Fonte de tensao controlada por tensao
  */
 #include "tensaotensao.cpp"
- /**
+/**
  * Modelo de Fonte de tensao controlada por corrente
  */
 #include "tensaocorrente.cpp"
+/**
+ * Modelo de resistor nlinear
+ */
+#include "resistornlinear.cpp"
+/**
+ * Modelo de amplificador operacional
+ */
+#include "ampop.cpp"
+/**
+ * Modelo de transformador
+ */
+#include "transformador.cpp"
+
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -138,7 +151,7 @@ class Factory
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
-                    stof(element[3])
+                    stod(element[3])
                 );
                 componentes.push_back(component);
             } else if (type == "L") {
@@ -146,7 +159,7 @@ class Factory
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
-                    stof(element[3])
+                    stod(element[3])
                 );
                 componentes.push_back(component);
             } else if (type == "E") {
@@ -156,7 +169,7 @@ class Factory
                     stoi(element[2]),
                     stoi(element[3]),
                     stoi(element[4]),
-                    stof(element[5])
+                    stod(element[5])
                 );
                 componentes.push_back(component);
             } else if (type == "F") {
@@ -166,7 +179,7 @@ class Factory
                     stoi(element[2]),
                     stoi(element[3]),
                     stoi(element[4]),
-                    stof(element[5])
+                    stod(element[5])
                 );
                 componentes.push_back(component);
             } else if (type == "G") {
@@ -176,7 +189,7 @@ class Factory
                     stoi(element[2]),
                     stoi(element[3]),
                     stoi(element[4]),
-                    stof(element[5])
+                    stod(element[5])
                 );
                 componentes.push_back(component);
             } else if (type == "H") {
@@ -186,7 +199,54 @@ class Factory
                     stoi(element[2]),
                     stoi(element[3]),
                     stoi(element[4]),
+                    stod(element[5])
+                );
+                componentes.push_back(component);
+            } else if (type == "O") {
+                AmpOp *component = new AmpOp(
+                    element[0],
+                    stoi(element[1]),
+                    stoi(element[2]),
+                    stoi(element[3]),
+                    stoi(element[4])
+                );
+                componentes.push_back(component);
+            } else if (type == "N") {
+                ResistorNLinear *component = new ResistorNLinear(
+                    element[0],
+                    stoi(element[1]),
+                    stoi(element[2]),
+                    stoi(element[3]),
+                    stod(element[4]),
+                    stod(element[5]),
+                    stod(element[6]),
+                    stod(element[7]),
+                    stod(element[8]),
+                    stod(element[9]),
+                    stod(element[10]),
+                    stod(element[11])
+                );
+                componentes.push_back(component);
+            } else if (type == "K") {
+                Transformador *component = new Transformador(
+                    element[0],
+                    stoi(element[1]),
+                    stoi(element[2]),
+                    stoi(element[3]),
+                    stoi(element[4]),
                     stof(element[5])
+                );
+                componentes.push_back(component);
+            } else if (type == "$") {
+                Chave *component = new Chave(
+                    element[0],
+                    stoi(element[1]),
+                    stoi(element[2]),
+                    stoi(element[3]),
+                    stoi(element[4]),
+                    stod(element[5]),
+                    stod(element[6]),
+                    stod(element[7])
                 );
                 componentes.push_back(component);
             } else if (type == ".") {

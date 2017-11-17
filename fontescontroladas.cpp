@@ -17,19 +17,30 @@ class FontesControladas : public Components4t
          */
         FontesControladas(string n, int a, int b, int c, int d, double g) : Components4t(n, a, b, c, d)
         {
+            setGanho(g);
         }
 
+        /**
+         * Define o fator multiplicativo da fonte controlada
+         * @param g valor do ganho
+         */
         void setGanho(double g)
         {
             ganho = g;
         }
 
+        /**
+         * Retorna a ganho da fonte controlada
+         */
         double getGanho()
         {
             return ganho;
         }
 
     private:
+        /**
+         * ganho associado a fonte controlada
+         */
         double ganho;
 };
 
