@@ -1,7 +1,7 @@
 #ifndef DC
 #define DC
 /**
- * Modelo basico de componentes
+ * Modelo basico de fontes independentes
  */
 #include "fonteindependente.cpp"
 

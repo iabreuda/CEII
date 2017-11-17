@@ -7,7 +7,7 @@
  */
 #include <math.h>
 /**
- * Modelo basico de componentes
+ * Modelo basico de fontes independentes
  */
 #include "fonteindependente.cpp"
 
@@ -21,12 +21,12 @@ class Senoidal : public FonteIndependente
          * Construtor
          */
         Senoidal(string n, int a, int b,
-            double a0, double a, double f,
+            double a0, double amp, double f,
             double delay, double damp, double p,
             double cic, double t) : FonteIndependente(n, a, b)
         {
             setNivelDC(a0);
-            setAmplitude(a);
+            setAmplitude(amp);
             setFrequencia(f);
             setAtraso(delay);
             setAmortecimento(damp);

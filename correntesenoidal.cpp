@@ -1,7 +1,8 @@
 #ifndef CORRENTESENOIDAL
 #define CORRENTESENOIDAL
+
 /**
- * Modelo basico componentes de 4 terminais
+ * Modelo basico de fonte senoidal
  */
 #include "senoidal.cpp"
 

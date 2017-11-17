@@ -1,7 +1,8 @@
 #ifndef TENSAODC
 #define TENSAODC
+
 /**
- * Modelo basico componentes de 4 terminais
+ * Modelo basico componentes de fonte DC
  */
 #include "dc.cpp"
 

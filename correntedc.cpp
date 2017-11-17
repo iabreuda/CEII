@@ -1,7 +1,8 @@
 #ifndef CORRENTEDC
 #define CORRENTEDC
+
 /**
- * Modelo basico componentes de 4 terminais
+ * Modelo basico componentes de fonte DC
  */
 #include "dc.cpp"
 
