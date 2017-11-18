@@ -87,9 +87,9 @@ class Factory
         /**
          * Construtor
          */
-        Factory(vector<vector<string> > listOfElements)
+        Factory(double t)
         {
-            setup(listOfElements);
+            setTempo(t);
         }
 
         vector<Components*> getComponents()
@@ -117,6 +117,11 @@ class Factory
             return metodo;
         }
 
+        double getTempo()
+        {
+            return tempo;
+        }
+
         void setPasso(double v)
         {
             passo = v;
@@ -137,19 +142,16 @@ class Factory
             metodo = v;
         }
 
+        void setTempo(double t)
+        {
+            tempo = t;
+        }
+
         bool isTrapezio()
         {
             return getMetodo() == "TRAP";
         }
 
-    private:
-        double tempoFinal;
-        double passo;
-        double passoPonto;
-        string metodo;
-        double tempo = 0;
-
-        vector<Components*> componentes;
         void setup(vector<vector<string> > listOfElements)
         {
             string type;
@@ -163,6 +165,15 @@ class Factory
                 build(type, listOfElements[row - 1]);
             }
         }
+
+    private:
+        double tempoFinal;
+        double passo;
+        double passoPonto;
+        string metodo;
+        double tempo;
+
+        vector<Components*> componentes;
 
         void build(string type, vector<string> element)
         {
