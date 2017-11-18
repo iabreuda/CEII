@@ -15,6 +15,11 @@
  */
 #include <fstream>
 /**
+ * Inclui:
+ *  - Vector
+ */
+#include <vector>
+/**
  * Classe parceadora de Net List
  */
 #include "parser.cpp"
@@ -31,6 +36,7 @@ int main()
     string fileName;
     bool repeat;
     ifstream myNet;
+    double tempo = 0;
 
     do {
         //system("cls"); /*Limpa o console do Windows*/
@@ -62,5 +68,37 @@ int main()
      */
     Parser* elementsList = new Parser(myNet);
 
-    Factory* components = new Factory(elementsList->getElements());
+    Factory* components = new Factory(tempo);
+
+
+
+    components->setup(elementsList->getElements());
+
+    int nos = 0;
+    int numeroComponentes = components->getComponents().size();
+    for (int i = 0; i < numeroComponentes; i++) {
+        int noA = components->getComponents()[i]->getNoA();
+        int noB = components->getComponents()[i]->getNoB();
+        if (noA > nos) {
+            nos = noA;
+        }
+        if (noB > nos) {
+            nos = noB;
+        }
+    }
+
+    vector<vector<double> > condutancia(nos + 1, vector<double>(nos + 1));
+    vector<vector<double> > correntes(nos + 1, vector<double>(1));
+
+    /*for (double t = components->getTempo(); t < components->getTempoFinal(); t += components->getPasso()) {*/
+        for (int i = 0; i < numeroComponentes; i++) {
+            components->getComponents()[i]->estampar(condutancia, correntes);
+        }
+    /*}*/
+
+    vector<vector<double> > resultado = gauss(condutancia, correntes);
+
+    for(int x; x < resultado.size(); x++) {
+        cout << resultado[x][0] << endl;
+    }
 }
