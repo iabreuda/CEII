@@ -17,6 +17,20 @@ class CorrenteTensao : public FontesControladas
         CorrenteTensao(string n, int a, int b, int c, int d, double g) : FontesControladas(n, a, b, c, d, g)
         {
         }
+
+        /**
+         * Estanpa da matriz nodal modificada para fonte de corrente controlada por tensao
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<vector<double> >& correntes)
+        {
+            condutancia[getNoC()][getNoC()] += getGanho();
+            condutancia[getNoD()][getNoD()] += getGanho();
+            condutancia[getNoC()][getNoD()] += getGanho();
+            condutancia[getNoD()][getNoC()] += getGanho();
+        }
 };
 
 #endif
