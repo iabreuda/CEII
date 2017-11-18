@@ -68,6 +68,14 @@ class Components
             return noB;
         }
 
+        /**
+         * Estanpa da matriz nodal abstrata
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         */
+        void virtual estampar(vector<vector<double> >& condutancia,
+            vector<vector<double> >& correntes) {};
+
     private:
         /**
          * Nome do componentena netlist
