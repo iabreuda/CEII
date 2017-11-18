@@ -16,6 +16,7 @@ class Resistor : public Components
          */
         Resistor(string n, int a, int b, double v) : Components(n, a, b)
         {
+            setResistencia(v);
         }
 
         /**
@@ -33,6 +34,20 @@ class Resistor : public Components
         double getResistencia()
         {
             return resistencia;
+        }
+
+        /**
+         * Estanpa da matriz nodal modificada para resistor
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<vector<double> >& correntes)
+        {
+            condutancia[getNoA()][getNoA()] += 1/getResistencia();
+            condutancia[getNoB()][getNoB()] += 1/getResistencia();
+            condutancia[getNoA()][getNoB()] += -1/getResistencia();
+            condutancia[getNoB()][getNoA()] += -1/getResistencia();
         }
 
     private:
