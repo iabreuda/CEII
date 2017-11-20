@@ -15,6 +15,7 @@ class Components
             setNome(n);
             setNoA(a);
             setNoB(b);
+            setNos(2);
         }
 
         /**
@@ -68,13 +69,33 @@ class Components
             return noB;
         }
 
+        int virtual getNoC() {};
+        int virtual getNoD() {};
+
+        /**
+         * numero de nos de ligacao
+         */
+        void setNos(int n)
+        {
+            nos = n;
+        }
+
+        /**
+         * Retorna numero de nos de ligacao
+         */
+        int getNos()
+        {
+            return nos;
+        }
+
         /**
          * Estanpa da matriz nodal abstrata
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
          */
         void virtual estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes) {};
+            vector<vector<double> >& correntes,
+            vector<string> nodes) {};
 
     private:
         /**
@@ -89,6 +110,10 @@ class Components
          * Terminal B
          */
         int noB;
+        /**
+         * Numero de nos
+         */
+        int nos;
 };
 
 #endif

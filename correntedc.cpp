@@ -23,9 +23,11 @@ class CorrenteDC : public Dc
          * Estanpa da matriz nodal modificada fonte de corrente
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes)
+            vector<vector<double> >& correntes,
+            vector<string> nodes)
         {
             correntes[getNoA()][0] += -1*getValor();
             correntes[getNoB()][0] += getValor();

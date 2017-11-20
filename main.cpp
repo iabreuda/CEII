@@ -67,38 +67,67 @@ int main()
      * @return       Vetor de vetores devidamente separados com os componentes
      */
     Parser* elementsList = new Parser(myNet);
-
+    /**
+     * inicializa a fabrica de componentes com a constante tempo
+     * inicialmente zerada
+     */
     Factory* components = new Factory(tempo);
-
-
-
+    /**
+     * Incializa a construcao dos objetos de componentes
+     * e pega a matriz de objetos
+     */
     components->setup(elementsList->getElements());
-
+    vector<Components*> listaDeComponetes = components->getComponents();
+    /**
+     * Logica para pegar o numero de nos
+     */
     int nos = 0;
-    int numeroComponentes = components->getComponents().size();
-    for (int i = 0; i < numeroComponentes; i++) {
-        int noA = components->getComponents()[i]->getNoA();
-        int noB = components->getComponents()[i]->getNoB();
-        if (noA > nos) {
-            nos = noA;
-        }
-        if (noB > nos) {
-            nos = noB;
-        }
+    vector<string> nodes;
+    nodes = components->getAllNodes();
+    nos = nodes.size();
+    int numeroComponentes = listaDeComponetes.size();
+    /**
+     * Criando vetor de condutancai e correntes
+     * de acordo com o numero de nos no netlist
+     */
+    vector<vector<double> > condutancia(nos, vector<double>(nos));
+    vector<vector<double> > correntes(nos, vector<double>(1));
+
+    ofstream outfile ("resultados.tab");
+    outfile << "t";
+    for(int n = 1; n < nos; n++) {
+        outfile << " " << nodes[n];
     }
+    outfile << endl;
 
-    vector<vector<double> > condutancia(nos + 1, vector<double>(nos + 1));
-    vector<vector<double> > correntes(nos + 1, vector<double>(1));
-
-    /*for (double t = components->getTempo(); t < components->getTempoFinal(); t += components->getPasso()) {*/
+    for (double t = components->getTempo(); t < components->getTempoFinal(); t += components->getPasso()) {
+        components->setTempo(t);
+        components->setup(elementsList->getElements());
         for (int i = 0; i < numeroComponentes; i++) {
-            components->getComponents()[i]->estampar(condutancia, correntes);
+            listaDeComponetes[i]->estampar(condutancia, correntes, nodes);
         }
-    /*}*/
 
-    vector<vector<double> > resultado = gauss(condutancia, correntes);
-
-    for(int x; x < resultado.size(); x++) {
-        cout << resultado[x][0] << endl;
+        /**
+         * Eliminacao de gauss para encontrar as tensoes
+         * nodais
+         */
+        vector<vector<double> > resultado = gauss(condutancia, correntes);
+        /**
+         * transforma o terra em valor = 0;
+         */
+        double terra = resultado[0][0];
+        for(int n = 0; n < components->getNodesSize(); n++) {
+            resultado[n][0] -= terra;
+        }
+        /**
+         * Remove o no de terra;
+         */
+        outfile << t;
+        for(int x = 1; x < resultado.size(); x++) {
+            outfile << " " << resultado[x][0];
+            cout << nodes[x] << " = " << resultado[x][0] << endl;
+        }
+        outfile << endl;
     }
+    outfile.close();
 }

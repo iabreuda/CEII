@@ -40,9 +40,11 @@ class Resistor : public Components
          * Estanpa da matriz nodal modificada para resistor
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes)
+            vector<vector<double> >& correntes,
+            vector<string> nodes)
         {
             condutancia[getNoA()][getNoA()] += 1/getResistencia();
             condutancia[getNoB()][getNoB()] += 1/getResistencia();

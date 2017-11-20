@@ -60,7 +60,6 @@ vector<vector<double> > gauss(vector<vector<double> > condutancia, vector<vector
     if (condutanciaRows != correnteRows) {
         throw invalid_argument("Matrizes de condutancia e corrente nao tem o msm tamanho");
     }
-
     /**
      * Analisa cada linha da matriz de conduntancias
      */

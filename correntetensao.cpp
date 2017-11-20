@@ -22,14 +22,16 @@ class CorrenteTensao : public FontesControladas
          * Estanpa da matriz nodal modificada para fonte de corrente controlada por tensao
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes)
+            vector<vector<double> >& correntes,
+            vector<string> nodes)
         {
-            condutancia[getNoC()][getNoC()] += getGanho();
-            condutancia[getNoD()][getNoD()] += getGanho();
-            condutancia[getNoC()][getNoD()] += getGanho();
-            condutancia[getNoD()][getNoC()] += getGanho();
+            condutancia[getNoA()][getNoC()] += getGanho();
+            condutancia[getNoA()][getNoD()] += -1*getGanho();
+            condutancia[getNoB()][getNoC()] += -1*getGanho();
+            condutancia[getNoB()][getNoD()] += getGanho();
         }
 };
 

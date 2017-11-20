@@ -22,6 +22,20 @@ class CorrenteSenoidal : public Senoidal
             double cic, double t) : Senoidal(n, a, b, a0, amp, f, delay, damp, p, cic, t)
         {
         }
+
+        /**
+         * Estanpa da matriz nodal modificada fonte de corrente
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<vector<double> >& correntes,
+            vector<string> nodes)
+        {
+            correntes[getNoA()][0] += -1*getValor();
+            correntes[getNoB()][0] += getValor();
+        }
 };
 
 #endif

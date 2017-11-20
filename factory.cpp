@@ -2,6 +2,13 @@
 #define FACTORY
 
 /**
+ * Inclui:
+ *  - Sort
+ *  - Unique
+ *  - Reverse
+ */
+#include <algorithm>
+/**
  * Tratamento de excecoes
  */
 #include <stdexcept>
@@ -122,6 +129,41 @@ class Factory
             return tempo;
         }
 
+        int getNodesSize()
+        {
+            return nodes.size();
+        }
+
+        int getAuxNodesSize()
+        {
+            return auxNodes.size();
+        }
+
+        vector<string> getAllNodes()
+        {
+            int numeroComponentes = componentes.size();
+            vector<string> allNodes;
+
+            for (int index = 0; index < numeroComponentes; index++) {
+                nodes.push_back("e" + to_string(componentes[index]->getNoA()));
+                nodes.push_back("e" + to_string(componentes[index]->getNoB()));
+                if (componentes[index]->getNos() == 4) {
+                    nodes.push_back("e" + to_string(componentes[index]->getNoC()));
+                    nodes.push_back("e" + to_string(componentes[index]->getNoD()));
+                }
+            }
+            sort(nodes.begin(), nodes.end());
+            nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
+
+            sort(auxNodes.begin(), auxNodes.end());
+            auxNodes.erase(unique(auxNodes.begin(), auxNodes.end()), auxNodes.end());
+
+            allNodes.insert(allNodes.end(), nodes.begin(), nodes.end());
+            allNodes.insert(allNodes.end(), auxNodes.begin(), auxNodes.end());
+
+            return allNodes;
+        }
+
         void setPasso(double v)
         {
             passo = v;
@@ -164,6 +206,10 @@ class Factory
                 type = listOfElements[row-1][0].substr(0,1);
                 build(type, listOfElements[row - 1]);
             }
+            /**
+             * ultimas linhas passam a ser as primeiras
+             */
+            reverse(componentes.begin(), componentes.end());
         }
 
     private:
@@ -172,6 +218,8 @@ class Factory
         double passoPonto;
         string metodo;
         double tempo;
+        vector<string> nodes;
+        vector<string> auxNodes;
 
         vector<Components*> componentes;
 
@@ -211,6 +259,12 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
+                auxNodes.push_back(
+                    "j" +
+                    to_string(component->getNoA()) +
+                    "_" +
+                    to_string(component->getNoB())
+                );
             } else if (type == "F") {
                 CorrenteCorrente *component = new CorrenteCorrente(
                     element[0],
@@ -221,6 +275,12 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
+                auxNodes.push_back(
+                    "j" +
+                    to_string(component->getNoC()) +
+                    "_" +
+                    to_string(component->getNoD())
+                );
             } else if (type == "G") {
                 CorrenteTensao *component = new CorrenteTensao(
                     element[0],
@@ -241,6 +301,18 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
+                auxNodes.push_back(
+                    "j" +
+                    to_string(component->getNoC()) +
+                    "_" +
+                    to_string(component->getNoD())
+                );
+                auxNodes.push_back(
+                    "j" +
+                    to_string(component->getNoA()) +
+                    "_" +
+                    to_string(component->getNoB())
+                );
             } else if (type == "O") {
                 AmpOp *component = new AmpOp(
                     element[0],
@@ -250,6 +322,12 @@ class Factory
                     stoi(element[4])
                 );
                 componentes.push_back(component);
+                auxNodes.push_back(
+                    "j" +
+                    to_string(component->getNoA()) +
+                    "_" +
+                    to_string(component->getNoB())
+                );
             } else if (type == "N") {
                 ResistorNLinear *component = new ResistorNLinear(
                     element[0],
@@ -289,6 +367,8 @@ class Factory
                 );
                 componentes.push_back(component);
             } else if (type == "V") {
+                int nodeA;
+                int nodeB;
                 if ((element[3]) == "DC") {
                     TensaoDC *component = new TensaoDC(
                         element[0],
@@ -296,6 +376,8 @@ class Factory
                         stoi(element[2]),
                         stod(element[4])
                     );
+                    nodeA = component->getNoA();
+                    nodeB = component->getNoB();
                     componentes.push_back(component);
                 } else if ((element[3]) == "SIN") {
                     TensaoSenoidal *component = new TensaoSenoidal(
@@ -312,6 +394,8 @@ class Factory
                         tempo
                     );
                     componentes.push_back(component);
+                    nodeA = component->getNoA();
+                    nodeB = component->getNoB();
                 } else if ((element[3]) == "PULSO") {
                     TensaoPulso *component = new TensaoPulso(
                         element[0],
@@ -328,9 +412,21 @@ class Factory
                         tempo
                     );
                     componentes.push_back(component);
+                    nodeA = component->getNoA();
+                    nodeB = component->getNoB();
                 } else {
                     throw invalid_argument("Tipo de Fonte desconhecida");
                 }
+                /**
+                 * Adiciona uma corrente auxiliar para analise
+                 * nodal modificada
+                 */
+                auxNodes.push_back(
+                    "j" +
+                    to_string(nodeA) +
+                    "_" +
+                    to_string(nodeB)
+                );
             } else if (type == "I") {
                 if ((element[3]) == "DC") {
                     CorrenteDC *component = new CorrenteDC(

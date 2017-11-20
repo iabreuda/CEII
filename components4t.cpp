@@ -16,9 +16,9 @@ class Components4t : public Components
          */
         Components4t(string n, int a, int b, int c, int d) : Components(n, a, b)
         {
-            setNome(n);
-            setNoA(a);
-            setNoB(b);
+            setNoC(c);
+            setNoD(d);
+            setNos(4);
         }
 
         /**
@@ -53,6 +53,15 @@ class Components4t : public Components
         int getNoD()
         {
             return noD;
+        }
+
+        /**
+         * Componente tem 4 terminais?
+         * @return true
+         */
+        bool has4t()
+        {
+            return true;
         }
 
     private:
