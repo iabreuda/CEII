@@ -48,7 +48,7 @@ const vector<string> explode(const string& phrase, char delim)
  * e a matriz de corrente, aplica a eliminacao de gauss para transformar a matriz
  * de condutividade em uma matriz identidade.
  */
-vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes)
+vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos)
 {
     int condutanciaRows = condutancia.size();
     int correnteRows = correntes.size();
@@ -69,7 +69,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
          * Evita divisao por 0
          */
         if (pivot == 0) {
-            pivot = 10e9;
+            continue;
         }
 
         int column = condutancia[row].size();
@@ -91,6 +91,13 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
                 }
             }
         }
+    }
+    /**
+     * transforma o terra em valor = 0;
+     */
+    double terra = correntes[0];
+    for(int n = 0; n < nos; n++) {
+        correntes[n] -= terra;
     }
     return correntes;
 }

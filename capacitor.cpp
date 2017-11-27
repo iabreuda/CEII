@@ -50,7 +50,6 @@ class Capacitor : public Components
          */
         double getCorrente()
         {
-
             return corrente;
         }
 
@@ -84,15 +83,20 @@ class Capacitor : public Components
         {
             double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
 
-            condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
-            condutancia[getNoB()][getNoB()] += (2 * getCapacitancia())/passo;
-            condutancia[getNoA()][getNoB()] += (-2 * getCapacitancia())/passo;
-            condutancia[getNoB()][getNoA()] += (-2 * getCapacitancia())/passo;
+            if (passo != 0) {
+                condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
+                condutancia[getNoB()][getNoB()] += (2 * getCapacitancia())/passo;
+                condutancia[getNoA()][getNoB()] += (-2 * getCapacitancia())/passo;
+                condutancia[getNoB()][getNoA()] += (-2 * getCapacitancia())/passo;
 
-            correntes[getNoA()] += (((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente();
-            correntes[getNoB()] += (((-2 * getCapacitancia())/passo) * tensaoRamo) - getCorrente();
-
-            setCorrente((((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente());
+                correntes[getNoA()] += (((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente();
+                correntes[getNoB()] += (((-2 * getCapacitancia())/passo) * tensaoRamo) - getCorrente();
+                setCorrente((((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente());
+            } else {
+                correntes[getNoA()] += getCorrente();
+                correntes[getNoB()] += -1*getCorrente();
+                setCorrente(getCorrente());
+            }
         }
 
     private:

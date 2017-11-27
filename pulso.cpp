@@ -25,6 +25,16 @@ class Pulso : public FonteIndependente
             double tSub, double tDes, double tOn,
             double per, double cic, double t) : FonteIndependente(n, a, b)
         {
+            setAmp1(a1);
+            setAmp2(a2);
+            setAtraso(delay);
+            setTempoSubida(tSub);
+            setTempoDescida(tDes);
+            setTempoLigada(tOn);
+            setPeriodo(per);
+            setCiclo(cic);
+            setTempo(t);
+            setValor();
         }
 
         /**

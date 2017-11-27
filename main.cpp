@@ -94,7 +94,7 @@ int main()
         outfile << " " << nodes[n];
     }
     outfile << endl;
-    for (double t = components->getTempo(); t < components->getTempoFinal(); t += components->getPasso()) {
+    for (double t = components->getTempo(); t <= components->getTempoFinal() + components->getPasso(); t += components->getPasso()) {
         /**
          * Criando vetor de condutancai e correntes
          * de acordo com o numero de nos no netlist
@@ -115,11 +115,7 @@ int main()
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
 
-        /**
-         * Eliminacao de gauss para encontrar as tensoes
-         * nodais
-         */
-        resultado = gauss(condutancia, correntes);
+        resultado = gauss(condutancia, correntes, components->getNodesSize());
         bool converge = false;
         for (int n = 1; n <= 50; n++) {
             vector<double> resultadoAnterior = resultado;
@@ -128,19 +124,12 @@ int main()
             for (int i = 0; i < numeroComponentes; i++) {
                 components->getComponents()[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
             }
-            resultado = gauss(condutancia, correntes);
+            resultado = gauss(condutancia, correntes, components->getNodesSize());
 
             converge = comparar(resultadoAnterior, resultado);
             if (converge == true) {
                 break;
             }
-        }
-        /**
-         * transforma o terra em valor = 0;
-         */
-        double terra = resultado[0];
-        for(int n = 0; n < components->getNodesSize(); n++) {
-            resultado[n] -= terra;
         }
         /**
          * Remove o no de terra;
