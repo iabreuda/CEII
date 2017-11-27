@@ -29,7 +29,7 @@ class TensaoSenoidal : public Senoidal
          */
         string getAuxNode()
         {
-            return "j" + to_string(getNoA()) + "_" + to_string(getNoB());
+            return "j" + getNome();
         }
 
         /**
@@ -39,19 +39,18 @@ class TensaoSenoidal : public Senoidal
          * @param nodes       matriz de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
-
             condutancia[getNoA()][pos] += 1;
             condutancia[getNoB()][pos] += -1;
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
-
-            correntes[pos][0] += -1*getValor();
+            correntes[pos] += -1*getValor();
         }
 };
 
