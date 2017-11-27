@@ -69,8 +69,10 @@ class Components
             return noB;
         }
 
-        int virtual getNoC() {};
-        int virtual getNoD() {};
+        int virtual getNoC() {return 0;};
+        int virtual getNoD() {return 0;};
+        void virtual setCorrente(double v) {};
+        double virtual getCorrente() {return 0;};
 
         /**
          * numero de nos de ligacao
@@ -94,8 +96,9 @@ class Components
          * @param correntes   matriz de correntes
          */
         void virtual estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes) {};
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado) = 0;
 
     private:
         /**

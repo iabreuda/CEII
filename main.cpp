@@ -36,7 +36,6 @@ int main()
     string fileName;
     bool repeat;
     ifstream myNet;
-    double tempo = 0;
 
     do {
         //system("cls"); /*Limpa o console do Windows*/
@@ -71,13 +70,12 @@ int main()
      * inicializa a fabrica de componentes com a constante tempo
      * inicialmente zerada
      */
-    Factory* components = new Factory(tempo);
+    Factory* components = new Factory(0);
     /**
      * Incializa a construcao dos objetos de componentes
      * e pega a matriz de objetos
      */
     components->setup(elementsList->getElements());
-    vector<Components*> listaDeComponetes = components->getComponents();
     /**
      * Logica para pegar o numero de nos
      */
@@ -85,7 +83,7 @@ int main()
     vector<string> nodes;
     nodes = components->getAllNodes();
     nos = nodes.size();
-    int numeroComponentes = listaDeComponetes.size();
+    int numeroComponentes = components->getComponents().size();
 
     vector<Components*> listaDeComponetesAnterior(numeroComponentes);
     vector<double> resultado(nos);
@@ -107,14 +105,14 @@ int main()
         components->setup(elementsList->getElements());
 
         for (int i = 0; i < numeroComponentes; i++) {
-            if (listaDeComponetes[i]->getNome().substr(0,1) == "C") {
+            if (components->getComponents()[i]->getNome().substr(0,1) == "C") {
                 if (t == components->getTempo()) {
-                    listaDeComponetes[i]->setCorrente(0);
+                    components->getComponents()[i]->setCorrente(0);
                 } else {
-                    listaDeComponetes[i]->setCorrente(listaDeComponetesAnterior[i]->getCorrente());
+                    components->getComponents()[i]->setCorrente(listaDeComponetesAnterior[i]->getCorrente());
                 }
             }
-            listaDeComponetes[i]->estampar(condutancia, correntes, nodes, resultado);
+            components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
 
         /**
@@ -128,7 +126,7 @@ int main()
             vector<vector<double> > condutanciaNova(nos, vector<double>(nos));
             vector<double> correntesNova(nos);
             for (int i = 0; i < numeroComponentes; i++) {
-                listaDeComponetes[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
+                components->getComponents()[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
             }
             resultado = gauss(condutancia, correntes);
 

@@ -30,7 +30,7 @@ class TensaoPulso : public Pulso
          */
         string getAuxNode()
         {
-            return "j" + to_string(getNoA()) + "_" + to_string(getNoB());
+            return "j" + getNome();
         }
 
         /**
@@ -40,8 +40,9 @@ class TensaoPulso : public Pulso
          * @param nodes       matriz de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
@@ -52,7 +53,7 @@ class TensaoPulso : public Pulso
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
 
-            correntes[pos][0] += -1*getValor();
+            correntes[pos] += -1*getValor();
         }
 };
 

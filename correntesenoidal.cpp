@@ -30,11 +30,12 @@ class CorrenteSenoidal : public Senoidal
          * @param nodes        matris de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
-            correntes[getNoA()][0] += -1*getValor();
-            correntes[getNoB()][0] += getValor();
+            correntes[getNoA()] += -1*getValor();
+            correntes[getNoB()] += getValor();
         }
 };
 

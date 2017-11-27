@@ -111,15 +111,6 @@ class Pulso : public FonteIndependente
         }
 
         /**
-         * Define o valor atual da fonte
-         * no instante de tempo presente
-         */
-        virtual void setValor()
-        {
-            //@todo
-        }
-
-        /**
          * Retorna a amplitude 1
          */
         double getAmp1()
@@ -191,6 +182,36 @@ class Pulso : public FonteIndependente
             return tempo;
         }
 
+        /**
+         * Define o valor atual da fonte
+         * no instante de tempo presente
+         */
+        void setValor()
+        {
+            /**
+             * Regiao em que a fonte se encontra dentro do periodo
+             */
+            double iPeriod = fmod((getTempo() - getAtraso()), getPeriodo());
+
+            if (getTempo() <= getAtraso()) {
+                valor = getAmp1();
+            } else if (iPeriod < getTempoSubida()) {
+                double deltaAmp = getAmp2() - getAmp1();
+                double dPdts = iPeriod / getTempoSubida();
+                valor = ((deltaAmp * dPdts) + getAmp1());
+            } else if (iPeriod > (getTempoSubida() + getTempoLigada())) {
+                double deltaAmp = getAmp1() - getAmp2();
+                double dPdts = ((iPeriod - getTempoSubida() - getTempoLigada()) / getTempoDescida());
+                valor = (deltaAmp * dPdts) + getAmp2();
+            }
+            valor = getAmp2();
+        }
+
+        double getValor()
+        {
+            return valor;
+        }
+
     private:
         /**
          * Amplitude inicial
@@ -242,6 +263,7 @@ class Pulso : public FonteIndependente
          * Instante de tempo atual
          */
         double tempo;
+        double valor;
 };
 
 #endif

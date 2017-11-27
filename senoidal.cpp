@@ -77,7 +77,7 @@ class Senoidal : public FonteIndependente
          */
         void setAmortecimento(double damp)
         {
-            atraso = damp;
+            amortecimento = damp;
         }
 
         /**
@@ -107,18 +107,6 @@ class Senoidal : public FonteIndependente
             tempo = t;
         }
 
-        /**
-         * Define o valor da fonte
-         */
-        virtual void setValor()
-        {
-            float amplitude;
-            float senoide;
-
-            amplitude = getAmplitude() * exp((-1 * getAmortecimento()) * (getTempo() - getAtraso()));
-            senoide = sin(2 * M_PI * getFrequencia() * (getTempo() - getAtraso()) + ((M_PI/180) * getFase()));
-            valor = getNivelDC() + (amplitude * senoide);
-        }
 
         /**
          * Retorna o nivel DC
@@ -183,6 +171,7 @@ class Senoidal : public FonteIndependente
         {
             return tempo;
         }
+
 
     private:
         /**
