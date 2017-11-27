@@ -48,7 +48,7 @@ const vector<string> explode(const string& phrase, char delim)
  * e a matriz de corrente, aplica a eliminacao de gauss para transformar a matriz
  * de condutividade em uma matriz identidade.
  */
-vector<vector<double> > gauss(vector<vector<double> > condutancia, vector<vector<double> > correntes)
+vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes)
 {
     int condutanciaRows = condutancia.size();
     int correnteRows = correntes.size();
@@ -65,12 +65,11 @@ vector<vector<double> > gauss(vector<vector<double> > condutancia, vector<vector
      */
     for(int row = 0; row < condutanciaRows; row++) {
         double pivot = condutancia[row][row];
-
         /**
          * Evita divisao por 0
          */
         if (pivot == 0) {
-            pivot = 10^9;
+            pivot = 10e9;
         }
 
         int column = condutancia[row].size();
@@ -78,7 +77,7 @@ vector<vector<double> > gauss(vector<vector<double> > condutancia, vector<vector
             throw invalid_argument("Matrizes de condutancia deve ser quadrada");
         }
 
-        correntes[row][0] /= pivot;
+        correntes[row] /= pivot;
         for(int col = 0; col < column; col++) {
             condutancia[row][col] /= pivot;
         }
@@ -86,7 +85,7 @@ vector<vector<double> > gauss(vector<vector<double> > condutancia, vector<vector
         for(int r = 0; r < condutanciaRows; r++) {
             if (r != row) {
                 double fator = condutancia[r][row];
-                correntes[r][0] -= correntes[row][0] * fator;
+                correntes[r] -= correntes[row] * fator;
                 for(int c = 0; c < column; c++) {
                     condutancia[r][c] -= condutancia[row][c] * fator;
                 }
@@ -96,4 +95,27 @@ vector<vector<double> > gauss(vector<vector<double> > condutancia, vector<vector
     return correntes;
 }
 
+bool comparar(vector<double> vetor1, vector<double> vetor2)
+{
+    int nosIguais = 0;
+    double limite = 10e9;
+    int sizeOne = vetor1.size();
+    int sizeTwo = vetor2.size();
+
+    if (sizeOne != sizeTwo) {
+        throw invalid_argument("Matrizes de condutancia e corrente nao tem o msm tamanho");
+    }
+
+    for(int i = 0; i < sizeOne; i++) {
+        double lLimit = vetor1[i] - (vetor1[i] * limite);
+        double uLimit = vetor1[i] + (vetor1[i] * limite);
+        if (vetor2[i] <= uLimit && vetor2[i] >= lLimit) {
+            nosIguais++;
+        }
+    }
+    if (nosIguais == sizeOne) {
+        return true;
+    }
+    return false;
+}
 #endif
