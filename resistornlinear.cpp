@@ -3,22 +3,22 @@
 /**
  * Modelo basico de componentes
  */
-#include "resistor.cpp"
+#include "components.cpp"
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
 
-class ResistorNLinear : public Resistor
+class ResistorNLinear : public Components
 {
     public:
         /**
          * Construtor
          */
-        ResistorNLinear(string n, int a, int b, double v,
+        ResistorNLinear(string n, int a, int b,
             double x1, double y1,
             double x2, double y2,
             double x3, double y3,
-            double x4, double y4) : Resistor(n, a, b, v)
+            double x4, double y4) : Components(n, a, b)
         {
             setPonto1(x1,y1);
             setPonto2(x2,y2);
@@ -34,8 +34,8 @@ class ResistorNLinear : public Resistor
          */
         void setPonto1(double x1, double y1)
         {
-            ponto1[0] = x1;
-            ponto1[1] = y1;
+            ponto1.push_back(x1);
+            ponto1.push_back(y1);
         }
 
         /**
@@ -46,8 +46,8 @@ class ResistorNLinear : public Resistor
          */
         void setPonto2(double x2, double y2)
         {
-            ponto1[0] = x2;
-            ponto1[1] = y2;
+            ponto2.push_back(x2);
+            ponto2.push_back(y2);
         }
 
         /**
@@ -58,8 +58,8 @@ class ResistorNLinear : public Resistor
          */
         void setPonto3(double x3, double y3)
         {
-            ponto1[0] = x3;
-            ponto1[1] = y3;
+            ponto3.push_back(x3);
+            ponto3.push_back(y3);
         }
 
         /**
@@ -70,8 +70,8 @@ class ResistorNLinear : public Resistor
          */
         void setPonto4(double x4, double y4)
         {
-            ponto1[0] = x4;
-            ponto1[1] = y4;
+            ponto4.push_back(x4);
+            ponto4.push_back(y4);
         }
 
         /**
@@ -121,6 +121,81 @@ class ResistorNLinear : public Resistor
         {
             return ponto[1];
         }
+
+        double getDerivada1()
+        {
+            double deltaCorrente = getCorrenteNoPonto(getPonto2()) - getCorrenteNoPonto(getPonto1());
+            double deltaTensao = getTensaoNoPonto(getPonto2()) - getTensaoNoPonto(getPonto1());
+            return deltaCorrente / deltaTensao;
+        }
+
+        double getDerivada2()
+        {
+            double deltaCorrente = getCorrenteNoPonto(getPonto3()) - getCorrenteNoPonto(getPonto2());
+            double deltaTensao = getTensaoNoPonto(getPonto3()) - getTensaoNoPonto(getPonto2());
+            return deltaCorrente / deltaTensao;
+        }
+
+        double getDerivada3()
+        {
+            double deltaCorrente = getCorrenteNoPonto(getPonto4()) - getCorrenteNoPonto(getPonto3());
+            double deltaTensao = getTensaoNoPonto(getPonto4()) - getTensaoNoPonto(getPonto3());
+            return deltaCorrente / deltaTensao;
+        }
+
+        double getInclinacao(double tensao)
+        {
+            if (tensao <= getTensaoNoPonto(getPonto2())) {
+                return getDerivada1();
+            } else if (tensao <= getTensaoNoPonto(getPonto3())) {
+                return getDerivada2();
+            }
+            return getDerivada3();
+        }
+
+        double getResistencia(double tensao)
+        {
+            return 1/getInclinacao(tensao);
+        }
+
+        double getCorrente(double tensao)
+        {
+            if (tensao <= getTensaoNoPonto(getPonto2())) {
+                return getCorrenteNoPonto(getPonto2()) - (
+                    1/getResistencia(tensao) * getTensaoNoPonto(getPonto2())
+                );
+            } else if (tensao <= getTensaoNoPonto(getPonto3())) {
+                return getCorrenteNoPonto(getPonto3()) - (
+                    1/getResistencia(tensao) * getTensaoNoPonto(getPonto3())
+                );
+            }
+                return getCorrenteNoPonto(getPonto4()) - (
+                    1/getResistencia(tensao) * getTensaoNoPonto(getPonto4())
+                );
+        }
+
+        /**
+         * Estanpa da matriz nodal modificada para resistor nao linear
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
+        {
+            double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+
+            condutancia[getNoA()][getNoA()] += 1/getResistencia(tensaoRamo);
+            condutancia[getNoB()][getNoB()] += 1/getResistencia(tensaoRamo);
+            condutancia[getNoA()][getNoB()] += -1/getResistencia(tensaoRamo);
+            condutancia[getNoB()][getNoA()] += -1/getResistencia(tensaoRamo);
+
+            correntes[getNoA()] += -1*getCorrente(tensaoRamo);
+            correntes[getNoB()] += getCorrente(tensaoRamo);
+        }
+
 
     private:
         /**

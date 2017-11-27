@@ -25,8 +25,9 @@ class CorrenteTensao : public FontesControladas
          * @param nodes        matris de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
             condutancia[getNoA()][getNoC()] += getGanho();
             condutancia[getNoA()][getNoD()] += -1*getGanho();

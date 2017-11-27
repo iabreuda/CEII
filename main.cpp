@@ -86,12 +86,9 @@ int main()
     nodes = components->getAllNodes();
     nos = nodes.size();
     int numeroComponentes = listaDeComponetes.size();
-    /**
-     * Criando vetor de condutancai e correntes
-     * de acordo com o numero de nos no netlist
-     */
-    vector<vector<double> > condutancia(nos, vector<double>(nos));
-    vector<vector<double> > correntes(nos, vector<double>(1));
+
+    vector<Components*> listaDeComponetesAnterior(numeroComponentes);
+    vector<double> resultado(nos);
 
     ofstream outfile ("resultados.tab");
     outfile << "t";
@@ -99,33 +96,60 @@ int main()
         outfile << " " << nodes[n];
     }
     outfile << endl;
-
     for (double t = components->getTempo(); t < components->getTempoFinal(); t += components->getPasso()) {
+        /**
+         * Criando vetor de condutancai e correntes
+         * de acordo com o numero de nos no netlist
+         */
+        vector<vector<double> > condutancia(nos, vector<double>(nos));
+        vector<double> correntes(nos);
         components->setTempo(t);
         components->setup(elementsList->getElements());
+
         for (int i = 0; i < numeroComponentes; i++) {
-            listaDeComponetes[i]->estampar(condutancia, correntes, nodes);
+            if (listaDeComponetes[i]->getNome().substr(0,1) == "C") {
+                if (t == components->getTempo()) {
+                    listaDeComponetes[i]->setCorrente(0);
+                } else {
+                    listaDeComponetes[i]->setCorrente(listaDeComponetesAnterior[i]->getCorrente());
+                }
+            }
+            listaDeComponetes[i]->estampar(condutancia, correntes, nodes, resultado);
         }
 
         /**
          * Eliminacao de gauss para encontrar as tensoes
          * nodais
          */
-        vector<vector<double> > resultado = gauss(condutancia, correntes);
+        resultado = gauss(condutancia, correntes);
+        bool converge = false;
+        for (int n = 1; n <= 50; n++) {
+            vector<double> resultadoAnterior = resultado;
+            vector<vector<double> > condutanciaNova(nos, vector<double>(nos));
+            vector<double> correntesNova(nos);
+            for (int i = 0; i < numeroComponentes; i++) {
+                listaDeComponetes[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
+            }
+            resultado = gauss(condutancia, correntes);
+
+            converge = comparar(resultadoAnterior, resultado);
+            if (converge == true) {
+                break;
+            }
+        }
         /**
          * transforma o terra em valor = 0;
          */
-        double terra = resultado[0][0];
+        double terra = resultado[0];
         for(int n = 0; n < components->getNodesSize(); n++) {
-            resultado[n][0] -= terra;
+            resultado[n] -= terra;
         }
         /**
          * Remove o no de terra;
          */
         outfile << t;
-        for(int x = 1; x < resultado.size(); x++) {
-            outfile << " " << resultado[x][0];
-            cout << nodes[x] << " = " << resultado[x][0] << endl;
+        for(int x = 1; x < (int) resultado.size(); x++) {
+            outfile << " " << resultado[x];
         }
         outfile << endl;
     }

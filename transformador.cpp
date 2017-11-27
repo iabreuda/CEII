@@ -37,6 +37,19 @@ class Transformador : public Components4t
             return N;
         }
 
+        /**
+         * Estanpa da matriz nodal modificada fonte de tensao
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes       matriz de nos
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
+        {
+        }
+
     private:
         /**
          * Valor n do transformador

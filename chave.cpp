@@ -73,6 +73,34 @@ class Chave : public Components4t
             return ref;
         }
 
+        double getResistencia(double tensao)
+        {
+            if (tensao <= getRef()) {
+                return 1/getGOff();
+            }
+            return 1/getGOn();
+        }
+
+        /**
+         * Estanpa da matriz nodal modificada para resistor nao linear
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
+        {
+            double tensaoRamo = resultado[getNoC()] - resultado[getNoD()];
+
+            condutancia[getNoA()][getNoA()] += 1/getResistencia(tensaoRamo);
+            condutancia[getNoB()][getNoB()] += 1/getResistencia(tensaoRamo);
+            condutancia[getNoA()][getNoB()] += -1/getResistencia(tensaoRamo);
+            condutancia[getNoB()][getNoA()] += -1/getResistencia(tensaoRamo);
+        }
+
+
     private:
         /**
          * Condutancia quando a tensao entre o no C e D e

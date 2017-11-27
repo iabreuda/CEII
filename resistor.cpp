@@ -43,8 +43,9 @@ class Resistor : public Components
          * @param nodes        matris de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
             condutancia[getNoA()][getNoA()] += 1/getResistencia();
             condutancia[getNoB()][getNoB()] += 1/getResistencia();

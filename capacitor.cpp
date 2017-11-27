@@ -20,20 +20,20 @@ class Capacitor : public Components
         }
 
         /**
-         * Define a resistencia do capacitor
-         * @param v valor da resistencia
+         * Define a corrent no capacitor
+         * @param v valor da corrente
          */
-        void setResistencia(double v)
+        void setPasso(double p)
         {
-            resistencia = v;
+            passo = p;
         }
 
         /**
-         * Retorna a resistencia do  capacitor
+         * Retorna a corrente do  capacitor
          */
-        double getResistencia()
+        double getPasso()
         {
-            return resistencia;
+            return passo;
         }
 
         /**
@@ -50,6 +50,7 @@ class Capacitor : public Components
          */
         double getCorrente()
         {
+
             return corrente;
         }
 
@@ -70,18 +71,43 @@ class Capacitor : public Components
             return capacitancia;
         }
 
+        /**
+         * Estanpa da matriz nodal modificada para resistor nao linear
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void estampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
+        {
+            double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+
+            condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
+            condutancia[getNoB()][getNoB()] += (2 * getCapacitancia())/passo;
+            condutancia[getNoA()][getNoB()] += (-2 * getCapacitancia())/passo;
+            condutancia[getNoB()][getNoA()] += (-2 * getCapacitancia())/passo;
+
+            correntes[getNoA()] += (((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente();
+            correntes[getNoB()] += (((-2 * getCapacitancia())/passo) * tensaoRamo) - getCorrente();
+
+            setCorrente((((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente());
+        }
+
     private:
         /**
          * Resistencia associada ao modelo do capacitor
          * no trapezio
          */
-        double resistencia;
+        double passo;
         /**
          * Corrente da fonte de corrente
          * associada ao modelo do capacitor no trapezio
          */
         double corrente;
         /**
+         *
          * valor da capacitancia do capacitor
          */
         double capacitancia;

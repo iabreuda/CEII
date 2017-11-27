@@ -33,7 +33,7 @@ class TensaoCorrente : public FontesControladas
          */
         string getAuxNode2()
         {
-            return "j" + to_string(getNoA()) + "_" + to_string(getNoB());
+            return "j" + getNome();
         }
 
         /**
@@ -44,8 +44,9 @@ class TensaoCorrente : public FontesControladas
          * @param nodes       matriz de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
             vector<string>::iterator it;
             vector<string>::iterator it2;

@@ -24,7 +24,7 @@ class TensaoTensao : public FontesControladas
          */
         string getAuxNode()
         {
-            return "j" + to_string(getNoA()) + "_" + to_string(getNoB());
+            return "j" + getNome();
         }
 
         /**
@@ -35,8 +35,9 @@ class TensaoTensao : public FontesControladas
          * @param nodes       matriz de nos
          */
         void estampar(vector<vector<double> >& condutancia,
-            vector<vector<double> >& correntes,
-            vector<string> nodes)
+            vector<double>& correntes,
+            vector<string> nodes,
+            vector<double> resultado)
         {
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
