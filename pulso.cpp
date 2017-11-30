@@ -209,12 +209,15 @@ class Pulso : public FonteIndependente
                 double deltaAmp = getAmp2() - getAmp1();
                 double dPdts = iPeriod / getTempoSubida();
                 valor = ((deltaAmp * dPdts) + getAmp1());
-            } else if (iPeriod > (getTempoSubida() + getTempoLigada())) {
+            } else if (iPeriod >= getTempoSubida() && (iPeriod <= (getTempoSubida() + getTempoLigada()))) {
+                valor = getAmp2();
+            } else if ((iPeriod > (getTempoSubida() + getTempoLigada())) && (iPeriod < (getTempoDescida() + getTempoSubida() + getTempoLigada()))) {
                 double deltaAmp = getAmp1() - getAmp2();
                 double dPdts = ((iPeriod - getTempoSubida() - getTempoLigada()) / getTempoDescida());
                 valor = (deltaAmp * dPdts) + getAmp2();
+            } else {
+                valor = getAmp1();
             }
-            valor = getAmp2();
         }
 
         double getValor()

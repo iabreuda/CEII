@@ -82,6 +82,12 @@ class Capacitor : public Components
             vector<double> resultado)
         {
             double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+            if (getNoA() == 0) {
+                tensaoRamo = -1*resultado[getNoB()];
+            }
+            if (getNoB() == 0) {
+                tensaoRamo = resultado[getNoA()];
+            }
 
             if (passo != 0) {
                 condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
@@ -89,14 +95,24 @@ class Capacitor : public Components
                 condutancia[getNoA()][getNoB()] += (-2 * getCapacitancia())/passo;
                 condutancia[getNoB()][getNoA()] += (-2 * getCapacitancia())/passo;
 
-                correntes[getNoA()] += (((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente();
-                correntes[getNoB()] += (((-2 * getCapacitancia())/passo) * tensaoRamo) - getCorrente();
+                correntes[getNoA()] += (((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente(); /*getCorrente vale j no instante anterior*/
+                correntes[getNoB()] += (((-2 * getCapacitancia())/passo) * tensaoRamo) - getCorrente(); /*getCorrente vale j no instante anterior*/
+                /**
+                 * Define a nova corrente usando tensao no instante e a corrente no instante anterior
+                 * esse nova corrente agora passa a ser a corrente na fonte de corrente para o instante
+                 * atual
+                 */
                 setCorrente((((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente());
             } else {
+                condutancia[getNoA()][getNoA()] += 10e9;
+                condutancia[getNoB()][getNoB()] += 10e9;
+                condutancia[getNoA()][getNoB()] += -10e9;
+                condutancia[getNoB()][getNoA()] += -10e9;
+
                 correntes[getNoA()] += getCorrente();
                 correntes[getNoB()] += -1*getCorrente();
-                setCorrente(getCorrente());
             }
+
         }
 
     private:

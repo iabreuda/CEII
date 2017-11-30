@@ -10,15 +10,11 @@
  *  - vector
  */
 #include <vector>
- /**
- * Inclui:
- *  - vector
- */
-#include <vector>
 /**
  * Tratamento de excecoes
  */
 #include <stdexcept>
+#include <math.h>
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -60,16 +56,41 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
     if (condutanciaRows != correnteRows) {
         throw invalid_argument("Matrizes de condutancia e corrente nao tem o msm tamanho");
     }
+    /*
+    cout << "Condutancia" << endl;
+    for (int i = 1; i < condutanciaRows; i++) {
+        for (int j = 1; j < condutanciaRows; j++)
+        {
+            cout << condutancia[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << "Correntes" << endl;
+    for (int i = 1; i < condutanciaRows; i++) {
+        cout << correntes[i] << endl;
+    }*/
     /**
      * Analisa cada linha da matriz de conduntancias
      */
-    for(int row = 0; row < condutanciaRows; row++) {
-        double pivot = condutancia[row][row];
+    for(int row = 1; row < condutanciaRows; row++) {
+        int maxValue = 0;
+        int maxIndex = 0;
         /**
          * Evita divisao por 0
          */
+        for (int linha = 1; linha < condutanciaRows; linha++) {
+            if (fabs(condutancia[linha][row]) > maxValue) {
+                maxValue = condutancia[linha][row];
+                maxIndex = linha;
+            }
+        }
+        swap(condutancia[row], condutancia[maxIndex]);
+        swap(correntes[row], correntes[maxIndex]);
+
+        double pivot = condutancia[row][row];
         if (pivot == 0) {
-            continue;
+            throw invalid_argument("Matrizes Singular");
         }
 
         int column = condutancia[row].size();
@@ -78,27 +99,26 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         }
 
         correntes[row] /= pivot;
-        for(int col = 0; col < column; col++) {
+        for(int col = 1; col < column; col++) {
             condutancia[row][col] /= pivot;
         }
 
-        for(int r = 0; r < condutanciaRows; r++) {
+        for(int r = 1; r < condutanciaRows; r++) {
             if (r != row) {
                 double fator = condutancia[r][row];
                 correntes[r] -= correntes[row] * fator;
-                for(int c = 0; c < column; c++) {
+                for(int c = 1; c < column; c++) {
                     condutancia[r][c] -= condutancia[row][c] * fator;
                 }
             }
         }
     }
-    /**
-     * transforma o terra em valor = 0;
-     */
-    double terra = correntes[0];
-    for(int n = 0; n < nos; n++) {
-        correntes[n] -= terra;
-    }
+    /*
+    cout << "tensoes nodais" << endl;
+    for (int k = 1; k < 3; k++)
+    {
+        cout << correntes[k] << endl;
+    }*/
     return correntes;
 }
 

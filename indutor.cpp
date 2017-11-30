@@ -94,7 +94,14 @@ class Indutor : public Components
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
+
             double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+            if (getNoA() == 0) {
+                tensaoRamo = -1*resultado[getNoB()];
+            }
+            if (getNoB() == 0) {
+                tensaoRamo = resultado[getNoA()];
+            }
             corrente = resultado[pos];
 
             condutancia[getNoA()][pos] += 1;
@@ -104,6 +111,8 @@ class Indutor : public Components
             if (passo != 0) {
                 condutancia[pos][pos] += (2 * getIndutancia()) / passo;
                 correntes[pos] += (((2 * getIndutancia()) / passo) * corrente) + tensaoRamo;
+            } else {
+                condutancia[pos][pos] += 10e-9;
             }
         }
 

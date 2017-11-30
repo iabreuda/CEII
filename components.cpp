@@ -73,6 +73,7 @@ class Components
         int virtual getNoD() {return 0;};
         void virtual setCorrente(double v) {};
         double virtual getCorrente() {return 0;};
+        double virtual getCapacitancia() {return 0;};
 
         /**
          * numero de nos de ligacao

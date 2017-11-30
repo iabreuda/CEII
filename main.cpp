@@ -94,7 +94,7 @@ int main()
         outfile << " " << nodes[n];
     }
     outfile << endl;
-    for (double t = components->getTempo(); t <= components->getTempoFinal() + components->getPasso(); t += components->getPasso()) {
+    for (double t = components->getTempo(); t <= components->getTempoFinal(); t += components->getPasso()) {
         /**
          * Criando vetor de condutancai e correntes
          * de acordo com o numero de nos no netlist
@@ -102,20 +102,74 @@ int main()
         vector<vector<double> > condutancia(nos, vector<double>(nos));
         vector<double> correntes(nos);
         components->setTempo(t);
+        /**
+         * Criar a lista de elementos.
+         */
         components->setup(elementsList->getElements());
-
+        /**
+         * Verificar se alguns dos componentes e um capacitor
+         * para definir uma corrente inicial.
+         */
         for (int i = 0; i < numeroComponentes; i++) {
             if (components->getComponents()[i]->getNome().substr(0,1) == "C") {
-                if (t == components->getTempo()) {
+                if (t == 0) {
+                    /**
+                     * Corrente para quando o instante de tempo e zero
+                     */
                     components->getComponents()[i]->setCorrente(0);
                 } else {
+                    /**
+                     * Pega a corrente que passa pelo capacitor em um instante de tempo anterior e define como
+                     * corrente a ser utilizada no lugar de j0
+                     */
                     components->getComponents()[i]->setCorrente(listaDeComponetesAnterior[i]->getCorrente());
                 }
+                /*cout << "Corrente no capacitor: " << components->getComponents()[i]->getCorrente() << endl;*/
             }
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
 
         resultado = gauss(condutancia, correntes, components->getNodesSize());
+        /**
+         * Teste de adicionar a corrente apos o calculo
+         */
+        for (int i = 0; i < numeroComponentes; i++) {
+            if (components->getComponents()[i]->getNome().substr(0,1) == "C") {
+                int noA = components->getComponents()[i]->getNoA();
+                int noB = components->getComponents()[i]->getNoB();
+                /**
+                 * Pega a tensao nodal para a matriz de resultados atuais e estampas atuais
+                 */
+                double tensaoRamo = resultado[noA] - resultado[noB];
+                /**
+                 * Ignorar a tensao no no 0
+                 */
+                if (noA == 0) {
+                    tensaoRamo = -1*resultado[noB];
+                }
+                if (noB == 0) {
+                    tensaoRamo = resultado[noA];
+                }
+
+                /*cout << "Tenao no Ramo: " << tensaoRamo << endl;*/
+                /**
+                 * Pega a corrente passando no resistor no instante de tempo atual
+                 */
+                double correnteResistor = ((2* components->getComponents()[i]->getCapacitancia()) / components->getPasso()) * tensaoRamo;
+                /*cout << "Corrente Resistor: " << correnteResistor << endl;*/
+                /**
+                 * Pega a corrente no resistor e subtrai pela corrente na fonte de corrente no modelo
+                 * do trapezio
+                 */
+                /*cout << "Corrente na fonte: " << components->getComponents()[i]->getCorrente() << endl;*/
+                components->getComponents()[i]->setCorrente(
+                    correnteResistor -
+                    components->getComponents()[i]->getCorrente()
+                );
+                /*cout << "Corrente no capacitor ao final do instante: " << components->getComponents()[i]->getCorrente() << endl;*/
+            }
+        }
+        /**
         bool converge = false;
         for (int n = 1; n <= 50; n++) {
             vector<double> resultadoAnterior = resultado;
@@ -130,10 +184,13 @@ int main()
             if (converge == true) {
                 break;
             }
-        }
+        }*/
+
         /**
-         * Remove o no de terra;
+         * Salva a lista de componentes no instante anterior
          */
+        listaDeComponetesAnterior = components->getComponents();
+
         outfile << t;
         for(int x = 1; x < (int) resultado.size(); x++) {
             outfile << " " << resultado[x];
