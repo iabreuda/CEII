@@ -81,7 +81,13 @@ class Capacitor : public Components
             vector<string> nodes,
             vector<double> resultado)
         {
+            /**
+             * Pega a tensao no ramo no instante de tempo anterior
+             */
             double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+            /**
+             * Descarta o no Zero uma vez que ele e linearmente dependente
+             */
             if (getNoA() == 0) {
                 tensaoRamo = -1*resultado[getNoB()];
             }
@@ -89,6 +95,11 @@ class Capacitor : public Components
                 tensaoRamo = resultado[getNoA()];
             }
 
+            /**
+             * Dividido em duas etapas de tempo, para o instante inicial consideramos as tensoes
+             * e correntes zeradas, no caso do capacitor, ele possui uma condutancia infinita
+             * para todo os outros casos consideramos a estampa normal do modelo de trapezio
+             */
             if (passo != 0) {
                 condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
                 condutancia[getNoB()][getNoB()] += (2 * getCapacitancia())/passo;
@@ -127,7 +138,6 @@ class Capacitor : public Components
          */
         double corrente;
         /**
-         *
          * valor da capacitancia do capacitor
          */
         double capacitancia;

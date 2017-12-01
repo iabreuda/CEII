@@ -73,6 +73,11 @@ class Chave : public Components4t
             return ref;
         }
 
+        /**
+         * Retorna a resistencia da tensao de acordo com
+         * o ponto de operacao definido pea tensao no ramo
+         * no instante anterior
+         */
         double getResistencia(double tensao)
         {
             if (tensao <= getRef()) {
@@ -92,7 +97,19 @@ class Chave : public Components4t
             vector<string> nodes,
             vector<double> resultado)
         {
+            /**
+             * Pega a tensao no ramo no instante anterior
+             */
             double tensaoRamo = resultado[getNoC()] - resultado[getNoD()];
+            /**
+             * Descarta o no Zero uma vez que ele e linearmente dependente
+             */
+            if (getNoC() == 0) {
+                tensaoRamo = -1*resultado[getNoB()];
+            }
+            if (getNoD() == 0) {
+                tensaoRamo = resultado[getNoA()];
+            }
 
             condutancia[getNoA()][getNoA()] += 1/getResistencia(tensaoRamo);
             condutancia[getNoB()][getNoB()] += 1/getResistencia(tensaoRamo);

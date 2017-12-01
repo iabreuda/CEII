@@ -52,7 +52,6 @@ class TensaoPulso : public Pulso
             condutancia[getNoB()][pos] += -1;
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
-
             correntes[pos] += -1*getValor();
         }
 };

@@ -38,6 +38,15 @@ class Transformador : public Components4t
         }
 
         /**
+         * Retorna corrente que auxiliar
+         * para analise nodal modificada
+         */
+        string getAuxNode()
+        {
+            return "j" + to_string(getNoC()) + "_" + to_string(getNoD());
+        }
+
+        /**
          * Estanpa da matriz nodal modificada fonte de tensao
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
@@ -48,6 +57,18 @@ class Transformador : public Components4t
             vector<string> nodes,
             vector<double> resultado)
         {
+            vector<string>::iterator it;
+            it = find(nodes.begin(), nodes.end(), getAuxNode());
+            auto pos = it - nodes.begin();
+
+            condutancia[getNoA()][pos] += -1*getN();
+            condutancia[getNoB()][pos] += getN();
+            condutancia[getNoC()][pos] += 1;
+            condutancia[getNoD()][pos] += -1;
+            condutancia[pos][getNoA()] += getN();
+            condutancia[pos][getNoB()] += -1*getN();
+            condutancia[pos][getNoC()] += -1;
+            condutancia[pos][getNoD()] += 1;
         }
 
     private:

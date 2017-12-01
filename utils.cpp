@@ -57,6 +57,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         throw invalid_argument("Matrizes de condutancia e corrente nao tem o msm tamanho");
     }
     /*
+    cout << "Antes" << endl;
     cout << "Condutancia" << endl;
     for (int i = 1; i < condutanciaRows; i++) {
         for (int j = 1; j < condutanciaRows; j++)
@@ -74,19 +75,43 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
      * Analisa cada linha da matriz de conduntancias
      */
     for(int row = 1; row < condutanciaRows; row++) {
-        int maxValue = 0;
+        double maxValue = 0;
         int maxIndex = 0;
         /**
          * Evita divisao por 0
          */
+
+        cout << "Condutancia Antes" << endl;
+        for (int i = 1; i < condutanciaRows; i++) {
+            for (int j = 1; j < condutanciaRows; j++)
+            {
+                cout << condutancia[i][j] << " ";
+            }
+            cout << endl;
+        }
+
         for (int linha = 1; linha < condutanciaRows; linha++) {
-            if (fabs(condutancia[linha][row]) > maxValue) {
-                maxValue = condutancia[linha][row];
+            cout << "maxValue = " << maxValue << endl;
+            if (fabs(condutancia[linha][row]) > maxValue && linha >= row) {
+                maxValue = fabs(condutancia[linha][row]);
+                cout << "ValorMaximo = " << maxValue << endl;
                 maxIndex = linha;
             }
         }
+
         swap(condutancia[row], condutancia[maxIndex]);
         swap(correntes[row], correntes[maxIndex]);
+
+
+        cout << "Condutancia Depois" << endl;
+        for (int i = 1; i < condutanciaRows; i++) {
+            for (int j = 1; j < condutanciaRows; j++)
+            {
+                cout << condutancia[i][j] << " ";
+            }
+            cout << endl;
+        }
+
 
         double pivot = condutancia[row][row];
         if (pivot == 0) {

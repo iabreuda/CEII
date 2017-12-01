@@ -94,25 +94,36 @@ class Indutor : public Components
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
-
+            /**
+             * Tensao no instante de tempo anterior
+             */
             double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+            /**
+             * Descarta o no Zero uma vez que ele e linearmente dependente
+             */
             if (getNoA() == 0) {
                 tensaoRamo = -1*resultado[getNoB()];
             }
             if (getNoB() == 0) {
                 tensaoRamo = resultado[getNoA()];
             }
+
             corrente = resultado[pos];
 
             condutancia[getNoA()][pos] += 1;
             condutancia[getNoB()][pos] += -1;
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
+
+            /**
+             * Valores que sao variaves no instante de tempo inicial e no
+             * resto da analise
+             */
             if (passo != 0) {
                 condutancia[pos][pos] += (2 * getIndutancia()) / passo;
                 correntes[pos] += (((2 * getIndutancia()) / passo) * corrente) + tensaoRamo;
             } else {
-                condutancia[pos][pos] += 10e-9;
+                condutancia[pos][pos] += 10e9;
             }
         }
 

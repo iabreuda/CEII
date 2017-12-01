@@ -220,6 +220,9 @@ class Pulso : public FonteIndependente
             }
         }
 
+        /**
+         * Pega o valor de tensao
+         */
         double getValor()
         {
             return valor;
@@ -276,6 +279,10 @@ class Pulso : public FonteIndependente
          * Instante de tempo atual
          */
         double tempo;
+        /**
+         * Valor da tensao em um determinado
+         * instante de tempo
+         */
         double valor;
 };
 

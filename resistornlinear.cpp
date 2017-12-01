@@ -122,6 +122,9 @@ class ResistorNLinear : public Components
             return ponto[1];
         }
 
+        /**
+         * Pega a resistencia na primeira reta
+         */
         double getDerivada1()
         {
             double deltaCorrente = getCorrenteNoPonto(getPonto2()) - getCorrenteNoPonto(getPonto1());
@@ -129,6 +132,9 @@ class ResistorNLinear : public Components
             return deltaCorrente / deltaTensao;
         }
 
+        /**
+         * Pega a resistencia na segunda reta
+         */
         double getDerivada2()
         {
             double deltaCorrente = getCorrenteNoPonto(getPonto3()) - getCorrenteNoPonto(getPonto2());
@@ -136,6 +142,9 @@ class ResistorNLinear : public Components
             return deltaCorrente / deltaTensao;
         }
 
+        /**
+         * Pega a resistencia na terceira reta
+         */
         double getDerivada3()
         {
             double deltaCorrente = getCorrenteNoPonto(getPonto4()) - getCorrenteNoPonto(getPonto3());
@@ -143,6 +152,9 @@ class ResistorNLinear : public Components
             return deltaCorrente / deltaTensao;
         }
 
+        /**
+         * Escolhe a reta de acordo com o ponto de operacao da tensao
+         */
         double getInclinacao(double tensao)
         {
             if (tensao <= getTensaoNoPonto(getPonto2())) {
@@ -153,11 +165,17 @@ class ResistorNLinear : public Components
             return getDerivada3();
         }
 
+        /**
+         * Pega a resistencia no ponte de operacao pedido
+         */
         double getResistencia(double tensao)
         {
             return 1/getInclinacao(tensao);
         }
 
+        /**
+         * Corrente de acordo com a tensao no ponto de operacao
+         */
         double getCorrente(double tensao)
         {
             if (tensao <= getTensaoNoPonto(getPonto2())) {
@@ -185,7 +203,19 @@ class ResistorNLinear : public Components
             vector<string> nodes,
             vector<double> resultado)
         {
+            /**
+             * Pega a tensao no ramo no instante de tempo anterior
+             */
             double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+            /**
+             * Descarta o no Zero uma vez que ele e linearmente dependente
+             */
+            if (getNoA() == 0) {
+                tensaoRamo = -1*resultado[getNoB()];
+            }
+            if (getNoB() == 0) {
+                tensaoRamo = resultado[getNoA()];
+            }
 
             condutancia[getNoA()][getNoA()] += 1/getResistencia(tensaoRamo);
             condutancia[getNoB()][getNoB()] += 1/getResistencia(tensaoRamo);

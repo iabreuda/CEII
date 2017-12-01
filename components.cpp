@@ -69,8 +69,15 @@ class Components
             return noB;
         }
 
+        /**
+         * Metodos virtuais utilizados por componentes de 4 terminais
+         */
         int virtual getNoC() {return 0;};
         int virtual getNoD() {return 0;};
+        /**
+         * Necessario para pegar as correntes no capacitor, caso contrario
+         * o metodo nao pode ser utilizado no vetor de componentes
+         */
         void virtual setCorrente(double v) {};
         double virtual getCorrente() {return 0;};
         double virtual getCapacitancia() {return 0;};
