@@ -80,7 +80,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         /**
          * Evita divisao por 0
          */
-
+         /*
         cout << "Condutancia Antes" << endl;
         for (int i = 1; i < condutanciaRows; i++) {
             for (int j = 1; j < condutanciaRows; j++)
@@ -88,13 +88,11 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
                 cout << condutancia[i][j] << " ";
             }
             cout << endl;
-        }
+        }*/
 
         for (int linha = 1; linha < condutanciaRows; linha++) {
-            cout << "maxValue = " << maxValue << endl;
             if (fabs(condutancia[linha][row]) > maxValue && linha >= row) {
                 maxValue = fabs(condutancia[linha][row]);
-                cout << "ValorMaximo = " << maxValue << endl;
                 maxIndex = linha;
             }
         }
@@ -102,7 +100,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         swap(condutancia[row], condutancia[maxIndex]);
         swap(correntes[row], correntes[maxIndex]);
 
-
+        /*
         cout << "Condutancia Depois" << endl;
         for (int i = 1; i < condutanciaRows; i++) {
             for (int j = 1; j < condutanciaRows; j++)
@@ -110,7 +108,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
                 cout << condutancia[i][j] << " ";
             }
             cout << endl;
-        }
+        }*/
 
 
         double pivot = condutancia[row][row];

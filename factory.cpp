@@ -352,6 +352,12 @@ class Factory
                     stof(element[5])
                 );
                 componentes.push_back(component);
+                auxNodes.push_back(
+                    "j" +
+                    to_string(component->getNoC()) +
+                    "_" +
+                    to_string(component->getNoD())
+                );
             } else if (type == "$") {
                 Chave *component = new Chave(
                     element[0],
