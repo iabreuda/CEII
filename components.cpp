@@ -28,6 +28,30 @@ class Components
         }
 
         /**
+         * Define a linearidade do componente
+         */
+        void setLinearidade(bool l)
+        {
+            linear = l;
+        }
+
+        /**
+         * retorna a linearidade do componente
+         */
+        bool getLinearidade()
+        {
+            return linear;
+        }
+
+        /**
+         * Verifica se o componente e linear
+         */
+        bool isLinear()
+        {
+            return linear == true;
+        }
+
+        /**
          * Retorna o nome do component
          */
         string getNome()
@@ -125,6 +149,10 @@ class Components
          * Numero de nos
          */
         int nos;
+        /**
+         * Linearidade do componente
+         */
+        bool linear = true;
 };
 
 #endif

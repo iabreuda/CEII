@@ -20,6 +20,7 @@ class Chave : public Components4t
             setGOn(on);
             setGOff(off);
             setRef(r);
+            setLinearidade(false);
         }
 
         /**

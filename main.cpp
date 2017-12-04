@@ -36,6 +36,7 @@ int main()
     string fileName;
     bool repeat;
     ifstream myNet;
+    bool linear = true;
 
     do {
         //system("cls"); /*Limpa o console do Windows*/
@@ -111,6 +112,16 @@ int main()
          * para definir uma corrente inicial.
          */
         for (int i = 0; i < numeroComponentes; i++) {
+            /**
+             * Verificar se existe algum componente nao linear
+             */
+            if (! components->getComponents()[i]->isLinear()) {
+                linear = false;
+            }
+            /**
+             * Caso especifico para quando o componente e um capacitor
+             * e temos que definir a corrente que passa pelo capacitor
+             */
             if (components->getComponents()[i]->getNome().substr(0,1) == "C") {
                 if (t == 0) {
                     /**
@@ -124,7 +135,6 @@ int main()
                      */
                     components->getComponents()[i]->setCorrente(listaDeComponetesAnterior[i]->getCorrente());
                 }
-                /*cout << "Corrente no capacitor: " << components->getComponents()[i]->getCorrente() << endl;*/
             }
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
@@ -150,41 +160,42 @@ int main()
                 if (noB == 0) {
                     tensaoRamo = resultado[noA];
                 }
-
-                /*cout << "Tenao no Ramo: " << tensaoRamo << endl;*/
                 /**
                  * Pega a corrente passando no resistor no instante de tempo atual
                  */
                 double correnteResistor = ((2* components->getComponents()[i]->getCapacitancia()) / components->getPasso()) * tensaoRamo;
-                /*cout << "Corrente Resistor: " << correnteResistor << endl;*/
                 /**
                  * Pega a corrente no resistor e subtrai pela corrente na fonte de corrente no modelo
                  * do trapezio
                  */
-                /*cout << "Corrente na fonte: " << components->getComponents()[i]->getCorrente() << endl;*/
                 components->getComponents()[i]->setCorrente(
                     correnteResistor -
                     components->getComponents()[i]->getCorrente()
                 );
-                /*cout << "Corrente no capacitor ao final do instante: " << components->getComponents()[i]->getCorrente() << endl;*/
             }
         }
-        /**
-        bool converge = false;
-        for (int n = 1; n <= 50; n++) {
-            vector<double> resultadoAnterior = resultado;
-            vector<vector<double> > condutanciaNova(nos, vector<double>(nos));
-            vector<double> correntesNova(nos);
-            for (int i = 0; i < numeroComponentes; i++) {
-                components->getComponents()[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
-            }
-            resultado = gauss(condutancia, correntes, components->getNodesSize());
 
-            converge = comparar(resultadoAnterior, resultado);
-            if (converge == true) {
-                break;
+        /**
+         * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
+         */
+        if (linear == false) {
+            bool converge = false;
+            for (int n = 1; n <= 50; n++) {
+                vector<double> resultadoAnterior = resultado;
+                vector<vector<double> > condutanciaNova(nos, vector<double>(nos));
+                vector<double> correntesNova(nos);
+                for (int i = 0; i < numeroComponentes; i++) {
+                    components->getComponents()[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
+                }
+                resultado = gauss(condutancia, correntes, components->getNodesSize());
+
+                converge = comparar(resultadoAnterior, resultado);
+                if (converge == true) {
+                    break;
+                }
             }
-        }*/
+        }
+
 
         /**
          * Salva a lista de componentes no instante anterior
@@ -197,5 +208,6 @@ int main()
         }
         outfile << endl;
     }
+    cout << linear << endl;
     outfile.close();
 }

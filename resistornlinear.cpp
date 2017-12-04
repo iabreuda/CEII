@@ -20,6 +20,7 @@ class ResistorNLinear : public Components
             double x3, double y3,
             double x4, double y4) : Components(n, a, b)
         {
+            setLinearidade(false);
             setPonto1(x1,y1);
             setPonto2(x2,y2);
             setPonto3(x3,y3);
