@@ -81,26 +81,26 @@ class Capacitor : public Components
             vector<string> nodes,
             vector<double> resultado)
         {
-            /**
-             * Pega a tensao no ramo no instante de tempo anterior
-             */
-            double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
-            /**
-             * Descarta o no Zero uma vez que ele e linearmente dependente
-             */
-            if (getNoA() == 0) {
-                tensaoRamo = -1*resultado[getNoB()];
-            }
-            if (getNoB() == 0) {
-                tensaoRamo = resultado[getNoA()];
-            }
+                /**
+                 * Dividido em duas etapas de tempo, para o instante inicial consideramos as tensoes
+                 * e correntes zeradas, no caso do capacitor, ele possui uma condutancia infinita
+                 * para todo os outros casos consideramos a estampa normal do modelo de trapezio
+                 */
+                if (passo != 0) {
+                /**
+                 * Pega a tensao no ramo no instante de tempo anterior
+                 */
+                double tensaoRamo = resultado[getNoA()] - resultado[getNoB()];
+                /**
+                 * Descarta o no Zero uma vez que ele e linearmente dependente
+                 */
+                if (getNoA() == 0) {
+                    tensaoRamo = -1*resultado[getNoB()];
+                }
+                if (getNoB() == 0) {
+                    tensaoRamo = resultado[getNoA()];
+                }
 
-            /**
-             * Dividido em duas etapas de tempo, para o instante inicial consideramos as tensoes
-             * e correntes zeradas, no caso do capacitor, ele possui uma condutancia infinita
-             * para todo os outros casos consideramos a estampa normal do modelo de trapezio
-             */
-            if (passo != 0) {
                 condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
                 condutancia[getNoB()][getNoB()] += (2 * getCapacitancia())/passo;
                 condutancia[getNoA()][getNoB()] += (-2 * getCapacitancia())/passo;

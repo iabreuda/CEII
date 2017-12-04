@@ -88,6 +88,7 @@ int main()
 
     vector<Components*> listaDeComponetesAnterior(numeroComponentes);
     vector<double> resultado(nos);
+    vector<double> resultadoAnterior(nos);
 
     ofstream outfile ("resultados.tab");
     outfile << "t";
@@ -138,8 +139,9 @@ int main()
             }
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
-
+        resultadoAnterior = resultado;
         resultado = gauss(condutancia, correntes, components->getNodesSize());
+
         /**
          * Teste de adicionar a corrente apos o calculo
          */
@@ -174,20 +176,33 @@ int main()
                 );
             }
         }
-
         /**
          * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
          * newton raphson e so feito no instante de tempo zero
          */
-        if (linear == false && t == 0) {
+        if (linear == false) {
             bool converge = false;
             for (int n = 1; n <= 50; n++) {
-                vector<double> resultadoAnterior = resultado;
-                vector<vector<double> > condutanciaNova(nos, vector<double>(nos));
-                vector<double> correntesNova(nos);
                 for (int i = 0; i < numeroComponentes; i++) {
-                    components->getComponents()[i]->estampar(condutanciaNova, correntesNova, nodes, resultadoAnterior);
+                    if (components->getComponents()[i]->getNome().substr(0,1) == "$" ||
+                        components->getComponents()[i]->getNome().substr(0,1) == "N") {
+                        /*Desestampa e reestampa componentes nao lineares*/
+                        components->getComponents()[i]->desestampar(condutancia, correntes, resultadoAnterior);
+                        components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
+                    }
                 }
+                /*
+                cout << "===========" << n << "===========" << endl;
+                cout << "resultadoAnterior" << endl;
+                for (int a = 0; a < resultadoAnterior.size(); a++) {
+                    cout << resultadoAnterior[a] << endl;
+                }
+                cout << "resultado" << endl;
+                for (int b = 0; b < resultado.size(); b++) {
+                    cout << resultado[b] << endl;
+                }
+                cout << "=================" << endl;*/
+                resultadoAnterior = resultado;
                 resultado = gauss(condutancia, correntes, components->getNodesSize());
 
                 converge = comparar(resultadoAnterior, resultado);
@@ -196,6 +211,7 @@ int main()
                 }
             }
         }
+
         /**
          * Salva a lista de componentes no instante anterior
          */

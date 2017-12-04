@@ -132,6 +132,15 @@ class Components
             vector<string> nodes,
             vector<double> resultado) = 0;
 
+        /**
+         * Desestanpa da matriz nodal abstrata
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         */
+        void virtual desestampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<double> resultado) {};
+
     private:
         /**
          * Nome do componentena netlist

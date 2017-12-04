@@ -79,12 +79,12 @@ class Chave : public Components4t
          * o ponto de operacao definido pea tensao no ramo
          * no instante anterior
          */
-        double getResistencia(double tensao)
+        double getCondutancia(double tensao)
         {
             if (tensao <= getRef()) {
-                return 1/getGOff();
+                return getGOff();
             }
-            return 1/getGOn();
+            return getGOn();
         }
 
         /**
@@ -106,16 +106,46 @@ class Chave : public Components4t
              * Descarta o no Zero uma vez que ele e linearmente dependente
              */
             if (getNoC() == 0) {
-                tensaoRamo = -1*resultado[getNoB()];
+                tensaoRamo = -1*resultado[getNoD()];
             }
             if (getNoD() == 0) {
-                tensaoRamo = resultado[getNoA()];
+                tensaoRamo = resultado[getNoC()];
             }
 
-            condutancia[getNoA()][getNoA()] += 1/getResistencia(tensaoRamo);
-            condutancia[getNoB()][getNoB()] += 1/getResistencia(tensaoRamo);
-            condutancia[getNoA()][getNoB()] += -1/getResistencia(tensaoRamo);
-            condutancia[getNoB()][getNoA()] += -1/getResistencia(tensaoRamo);
+            condutancia[getNoA()][getNoA()] += getCondutancia(tensaoRamo);
+            condutancia[getNoB()][getNoB()] += getCondutancia(tensaoRamo);
+            condutancia[getNoA()][getNoB()] += -1*getCondutancia(tensaoRamo);
+            condutancia[getNoB()][getNoA()] += -1*getCondutancia(tensaoRamo);
+        }
+
+        /**
+         * Estanpa da matriz nodal modificada para resistor nao linear
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void desestampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<double> resultado)
+        {
+            /**
+             * Pega a tensao no ramo no instante anterior
+             */
+            double tensaoRamo = resultado[getNoC()] - resultado[getNoD()];
+            /**
+             * Descarta o no Zero uma vez que ele e linearmente dependente
+             */
+            if (getNoC() == 0) {
+                tensaoRamo = -1*resultado[getNoD()];
+            }
+            if (getNoD() == 0) {
+                tensaoRamo = resultado[getNoC()];
+            }
+
+            condutancia[getNoA()][getNoA()] += -1*getCondutancia(tensaoRamo);
+            condutancia[getNoB()][getNoB()] += -1*getCondutancia(tensaoRamo);
+            condutancia[getNoA()][getNoB()] += getCondutancia(tensaoRamo);
+            condutancia[getNoB()][getNoA()] += getCondutancia(tensaoRamo);
         }
 
 

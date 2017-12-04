@@ -148,7 +148,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
 bool comparar(vector<double> vetor1, vector<double> vetor2)
 {
     int nosIguais = 0;
-    double limite = 10e9;
+    double limite = 10e-5;
     int sizeOne = vetor1.size();
     int sizeTwo = vetor2.size();
 
@@ -157,12 +157,20 @@ bool comparar(vector<double> vetor1, vector<double> vetor2)
     }
 
     for(int i = 0; i < sizeOne; i++) {
-        double lLimit = vetor1[i] - (vetor1[i] * limite);
-        double uLimit = vetor1[i] + (vetor1[i] * limite);
-        if (vetor2[i] <= uLimit && vetor2[i] >= lLimit) {
+        double lLimit = fabs(vetor1[i]) - (fabs(vetor1[i]) * limite);
+        double uLimit = fabs(vetor1[i]) + (fabs(vetor1[i]) * limite);
+        if (fabs(vetor2[i]) <= uLimit && fabs(vetor2[i]) >= lLimit) {
             nosIguais++;
+        } else {
+            /*cout << "no diferente: " << vetor2[i] << " : vetor 1 " << vetor1[i] << endl;*/
         }
     }
+    /*
+    cout << "Nos iguaos" << endl;
+    cout << nosIguais << endl;
+    cout << sizeOne << endl;
+    cout << sizeTwo << endl;
+    cout << "-------------" << endl;*/
     if (nosIguais == sizeOne) {
         return true;
     }
