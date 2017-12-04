@@ -183,6 +183,13 @@ class Senoidal : public FonteIndependente
             amplitude = getAmplitude() * exp((-1 * getAmortecimento()) * (getTempo() - getAtraso()));
             senoide = sin(2 * M_PI * getFrequencia() * (getTempo() - getAtraso()) + ((M_PI/180) * getFase()));
             valor = getNivelDC() + (amplitude * senoide);
+            /**
+             * Desliga a fonte caso o numero de ciclos tenha sido
+             * concluido
+             */
+            if (getTempo() >= (1/getFrequencia() * getCiclos())) {
+                valor = 0;
+            }
         }
 
 
