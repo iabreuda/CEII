@@ -205,8 +205,8 @@ class Pulso : public FonteIndependente
 
             if (getTempo() <= getAtraso()) {
                 valor = getAmp1();
-            } else if (getTempo() > ((getPeriodo()* getCiclo()) + getAtraso())) {
-                valor = 0; // caso quando o numero de ciclos da fonte pulsada termina
+            /*}  else if (getTempo() > ((getPeriodo()* getCiclo()) + getAtraso())) {
+                valor = 0; // caso quando o numero de ciclos da fonte pulsada termina */
             } else if (iPeriod < getTempoSubida()) {
                 double deltaAmp = getAmp2() - getAmp1();
                 double dPdts = iPeriod / getTempoSubida();

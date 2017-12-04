@@ -177,8 +177,9 @@ int main()
 
         /**
          * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
+         * newton raphson e so feito no instante de tempo zero
          */
-        if (linear == false) {
+        if (linear == false && t == 0) {
             bool converge = false;
             for (int n = 1; n <= 50; n++) {
                 vector<double> resultadoAnterior = resultado;
@@ -195,8 +196,6 @@ int main()
                 }
             }
         }
-
-
         /**
          * Salva a lista de componentes no instante anterior
          */
@@ -208,6 +207,5 @@ int main()
         }
         outfile << endl;
     }
-    cout << linear << endl;
     outfile.close();
 }

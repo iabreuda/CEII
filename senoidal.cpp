@@ -188,7 +188,7 @@ class Senoidal : public FonteIndependente
              * concluido
              */
             if (getTempo() >= (1/getFrequencia() * getCiclos())) {
-                valor = 0;
+                //valor = 0;
             }
         }
 
