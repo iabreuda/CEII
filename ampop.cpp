@@ -25,7 +25,7 @@ class AmpOp : public Components4t
          */
         string getAuxNode()
         {
-            return "j" + to_string(getNoA()) + "_" + to_string(getNoB());
+            return "j" + getNome();
         }
 
         /**

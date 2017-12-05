@@ -151,7 +151,7 @@ class Factory
                     nodes.push_back(to_string(componentes[index]->getNoD()));
                 }
             }
-            sort(nodes.begin(), nodes.end());
+            sort(nodes.begin(), nodes.end(), numeric_string_compare);
             nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
 
             sort(auxNodes.begin(), auxNodes.end());
@@ -278,12 +278,7 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back(
-                    "j" +
-                    to_string(component->getNoC()) +
-                    "_" +
-                    to_string(component->getNoD())
-                );
+                auxNodes.push_back("j" + component->getNome());
             } else if (type == "G") {
                 CorrenteTensao *component = new CorrenteTensao(
                     element[0],
@@ -304,13 +299,8 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back(
-                    "j" +
-                    to_string(component->getNoC()) +
-                    "_" +
-                    to_string(component->getNoD())
-                );
-                auxNodes.push_back("j" + component->getNome());
+                auxNodes.push_back("jx" + component->getNome());
+                auxNodes.push_back("jy" + component->getNome());
             } else if (type == "O") {
                 AmpOp *component = new AmpOp(
                     element[0],
@@ -320,12 +310,7 @@ class Factory
                     stoi(element[4])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back(
-                    "j" +
-                    to_string(component->getNoA()) +
-                    "_" +
-                    to_string(component->getNoB())
-                );
+                auxNodes.push_back("j" + component->getNome());
             } else if (type == "N") {
                 ResistorNLinear *component = new ResistorNLinear(
                     element[0],
@@ -351,12 +336,7 @@ class Factory
                     stof(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back(
-                    "j" +
-                    to_string(component->getNoC()) +
-                    "_" +
-                    to_string(component->getNoD())
-                );
+                auxNodes.push_back("j" + component->getNome());
             } else if (type == "$") {
                 Chave *component = new Chave(
                     element[0],

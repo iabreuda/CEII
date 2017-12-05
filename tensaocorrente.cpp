@@ -24,7 +24,7 @@ class TensaoCorrente : public FontesControladas
          */
         string getAuxNode()
         {
-            return "j" + to_string(getNoC()) + "_" + to_string(getNoD());
+            return "jx" + getNome();
         }
 
         /**
@@ -33,7 +33,7 @@ class TensaoCorrente : public FontesControladas
          */
         string getAuxNode2()
         {
-            return "j" + getNome();
+            return "jy" + getNome();
         }
 
         /**

@@ -2,6 +2,15 @@
 #define SENOIDAL
 
 /**
+ * Define o uso de constantes na bibloteca math
+ */
+#define _USE_MATH_DEFINES
+/**
+ * Inclui:
+ *  - pi
+ */
+#include <cmath>
+/**
  * Inclui:
  *  - sin
  */

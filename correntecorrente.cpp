@@ -24,7 +24,7 @@ class CorrenteCorrente : public FontesControladas
          */
         string getAuxNode()
         {
-            return "j" + to_string(getNoC()) + "_" + to_string(getNoD());
+            return "j" + getNome();
         }
 
         /**
