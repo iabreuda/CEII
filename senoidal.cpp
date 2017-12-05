@@ -187,8 +187,11 @@ class Senoidal : public FonteIndependente
              * Desliga a fonte caso o numero de ciclos tenha sido
              * concluido
              */
-            if (getTempo() >= (1/getFrequencia() * getCiclos())) {
-                //valor = 0;
+            if (getTempo() <= getAtraso()) {
+                valor = getNivelDC();
+            }
+            if (getTempo() >= (1/getFrequencia() * getCiclos()) + getAtraso()) {
+                valor = getNivelDC();
             }
         }
 
