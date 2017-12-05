@@ -1,6 +1,5 @@
 #ifndef FACTORY
 #define FACTORY
-
 /**
  * Inclui:
  *  - Sort

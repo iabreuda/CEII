@@ -68,7 +68,7 @@ class Parser
                  * Por default a primeira linha e o nome do circuito
                  * queremos discartar ela
                  */
-                if (lineNumber > 1) {
+                if (lineNumber > 1 && !line.empty()) {
                     auto componentLine = explode(line, ' ');
                     listOfElements.push_back(componentLine);
                 }
