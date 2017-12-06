@@ -14,7 +14,15 @@
  * Tratamento de excecoes
  */
 #include <stdexcept>
+/**
+ * Inclui
+ *  - fabs
+ */
 #include <math.h>
+/**
+ * Inclui
+ *  - sort
+ */
 #include <algorithm>
 
 /* Necessario para nao precisar escrever std:: */
@@ -57,39 +65,12 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
     if (condutanciaRows != correnteRows) {
         throw invalid_argument("Matrizes de condutancia e corrente nao tem o msm tamanho");
     }
-    /*
-    cout << "Antes" << endl;
-    cout << "Condutancia" << endl;
-    for (int i = 1; i < condutanciaRows; i++) {
-        for (int j = 1; j < condutanciaRows; j++)
-        {
-            cout << condutancia[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << "Correntes" << endl;
-    for (int i = 1; i < condutanciaRows; i++) {
-        cout << correntes[i] << endl;
-    }*/
     /**
      * Analisa cada linha da matriz de conduntancias
      */
     for(int row = 1; row < condutanciaRows; row++) {
         double maxValue = 0;
         int maxIndex = 0;
-        /**
-         * Evita divisao por 0
-         */
-         /*
-        cout << "Condutancia Antes" << endl;
-        for (int i = 1; i < condutanciaRows; i++) {
-            for (int j = 1; j < condutanciaRows; j++)
-            {
-                cout << condutancia[i][j] << " ";
-            }
-            cout << endl;
-        }*/
 
         for (int linha = 1; linha < condutanciaRows; linha++) {
             if (fabs(condutancia[linha][row]) > maxValue && linha >= row) {
@@ -97,20 +78,12 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
                 maxIndex = linha;
             }
         }
-
+        /**
+         * Troca as linhas de condutancia e corrente de acordo
+         * com o valor maximo
+         */
         swap(condutancia[row], condutancia[maxIndex]);
         swap(correntes[row], correntes[maxIndex]);
-
-        /*
-        cout << "Condutancia Depois" << endl;
-        for (int i = 1; i < condutanciaRows; i++) {
-            for (int j = 1; j < condutanciaRows; j++)
-            {
-                cout << condutancia[i][j] << " ";
-            }
-            cout << endl;
-        }*/
-
 
         double pivot = condutancia[row][row];
         if (pivot == 0) {
@@ -126,7 +99,9 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         for(int col = 1; col < column; col++) {
             condutancia[row][col] /= pivot;
         }
-
+        /**
+         * Transforma a matriz de condutancia em uma identidade
+         */
         for(int r = 1; r < condutanciaRows; r++) {
             if (r != row) {
                 double fator = condutancia[r][row];
@@ -137,19 +112,20 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
             }
         }
     }
-    /*
-    cout << "tensoes nodais" << endl;
-    for (int k = 1; k < 3; k++)
-    {
-        cout << correntes[k] << endl;
-    }*/
+
     return correntes;
 }
 
+/**
+ * Compara 2 vetores e verifica se eles estao proximos por uma margem de erro
+ * @param  vetor1
+ * @param  vetor2
+ * @return        True se igual False  se diferente
+ */
 bool comparar(vector<double> vetor1, vector<double> vetor2)
 {
     int nosIguais = 0;
-    double limite = 10e-5;
+    double limite = 10e-5; //Esse limete pode ser modificado para aumentar a exatidao da comparacao
     int sizeOne = vetor1.size();
     int sizeTwo = vetor2.size();
 
@@ -162,28 +138,26 @@ bool comparar(vector<double> vetor1, vector<double> vetor2)
         double uLimit = fabs(vetor1[i]) + (fabs(vetor1[i]) * limite);
         if (fabs(vetor2[i]) <= uLimit && fabs(vetor2[i]) >= lLimit) {
             nosIguais++;
-        } else {
-            /*cout << "no diferente: " << vetor2[i] << " : vetor 1 " << vetor1[i] << endl;*/
         }
     }
-    /*
-    cout << "Nos iguaos" << endl;
-    cout << nosIguais << endl;
-    cout << sizeOne << endl;
-    cout << sizeTwo << endl;
-    cout << "-------------" << endl;*/
     if (nosIguais == sizeOne) {
         return true;
     }
     return false;
 }
 
-
+/**
+ * Retirada do stack overflow para comparar numeros no formato de string
+ */
 bool is_not_digit(char c)
 {
     return ! isdigit(c);
 }
 
+/**
+ * Retirada do stack overflow para ordenar corretamente os nos
+ * de acordo com suas posicoes
+ */
 bool numeric_string_compare(const string& s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin(), it2 = s2.begin();

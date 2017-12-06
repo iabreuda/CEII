@@ -191,17 +191,6 @@ int main()
                         components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
                     }
                 }
-                /*
-                cout << "===========" << n << "===========" << endl;
-                cout << "resultadoAnterior" << endl;
-                for (int a = 0; a < resultadoAnterior.size(); a++) {
-                    cout << resultadoAnterior[a] << endl;
-                }
-                cout << "resultado" << endl;
-                for (int b = 0; b < resultado.size(); b++) {
-                    cout << resultado[b] << endl;
-                }
-                cout << "=================" << endl;*/
                 resultadoAnterior = resultado;
                 resultado = gauss(condutancia, correntes, components->getNodesSize());
 

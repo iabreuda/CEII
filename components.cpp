@@ -133,7 +133,7 @@ class Components
             vector<double> resultado) = 0;
 
         /**
-         * Desestanpa da matriz nodal abstrata
+         * Desestampa da matriz nodal abstrata
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
          */

@@ -66,7 +66,7 @@ class Parser
                 getline(myNet, line);
                 /**
                  * Por default a primeira linha e o nome do circuito
-                 * queremos discartar ela
+                 * queremos discartar ela e ignora linhas em branco
                  */
                 if (lineNumber > 1 && !line.empty()) {
                     auto componentLine = explode(line, ' ');

@@ -216,7 +216,9 @@ class Pulso : public FonteIndependente
         void setValor()
         {
             /**
-             * Regiao em que a fonte se encontra dentro do periodo
+             * Modela casos em que o tempo de subida e descida
+             * sao iguais a 0 para evitar problemas na plotagem
+             * do grafico
              */
             if (getTempoSubida() == 0) {
                 setTempoSubida(getPasso());
@@ -224,6 +226,10 @@ class Pulso : public FonteIndependente
             if (getTempoDescida() == 0) {
                 setTempoDescida(getPasso());
             }
+
+            /**
+             * Regiao em que a fonte se encontra dentro do periodo
+             */
             double iPeriod = fmod((getTempo() - getAtraso()), getPeriodo());
 
             if (getTempo() <= getAtraso()) {

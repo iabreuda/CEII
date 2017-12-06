@@ -98,46 +98,75 @@ class Factory
             setTempo(t);
         }
 
+        /**
+         * Retorna todos os componentes
+         */
         vector<Components*> getComponents()
         {
             return componentes;
         }
 
+        /**
+         * Retorna o passo de tempo
+         */
         double getPasso()
         {
             return passo;
         }
 
+        /**
+         * Retorna o tempo final de analise
+         */
         double getTempoFinal()
         {
             return tempoFinal;
         }
 
+        /**
+         * Restorn os Numeros de pontos por passo
+         */
         double getPassoPonto()
         {
             return passoPonto;
         }
 
+        /**
+         * Pega o metodo de analise no tempo
+         */
         string getMetodo()
         {
             return metodo;
         }
 
+        /**
+         * Retorna o instante de tempo
+         */
         double getTempo()
         {
             return tempo;
         }
 
+        /**
+         * retorna o numero de nos de tensao
+         */
         int getNodesSize()
         {
             return nodes.size();
         }
 
+        /**
+         * Retorna o numero de nos auxiliares adicionados por
+         * alguns componentes
+         */
         int getAuxNodesSize()
         {
             return auxNodes.size();
         }
 
+        /**
+         * Retorna um vetor com todos os nos devidamente ordenados
+         * e com as duplicadas removidas
+         */
         vector<string> getAllNodes()
         {
             int numeroComponentes = componentes.size();
@@ -163,36 +192,57 @@ class Factory
             return allNodes;
         }
 
+        /**
+         * Define o passo
+         */
         void setPasso(double v)
         {
             passo = v;
         }
 
+        /**
+         * Define o tempo final
+         */
         void setTempoFinal(double v)
         {
             tempoFinal = v;
         }
 
+        /**
+         * Define o passo por ponto
+         */
         void setPassoPonto(double v)
         {
             passoPonto = v;
         }
 
+        /**
+         * Define o metodo a ser utilizado na analise
+         */
         void setMetodo(string v)
         {
             metodo = v;
         }
 
+        /**
+         * Define o instante de tempo a ser analisado
+         */
         void setTempo(double t)
         {
             tempo = t;
         }
 
+        /**
+         * Verifica se o metodo de analise e trapezio
+         */
         bool isTrapezio()
         {
             return getMetodo() == "TRAP";
         }
 
+        /**
+         * Configura a lista de elementos para ser construida
+         */
         void setup(vector<vector<string> > listOfElements)
         {
             string type;
@@ -212,19 +262,46 @@ class Factory
         }
 
     private:
+        /**
+         * Tempo final a ser analisado
+         */
         double tempoFinal;
+        /**
+         * Salto entre intervalos de tempo
+         */
         double passo;
+        /**
+         * Numero de passos para cada ponto
+         */
         double passoPonto;
+        /**
+         * Metodo de analise
+         */
         string metodo;
+        /**
+         * Instante de tempo a ser analisado
+         */
         double tempo;
+        /**
+         * numero de nos de tensao
+         */
         vector<string> nodes;
+        /**
+         * numero de nos adicionado como auxiliares
+         */
         vector<string> auxNodes;
-
+        /**
+         * lista contendo instancia de todos os componentes
+         */
         vector<Components*> componentes;
 
+        /**
+         * Constroi instancia para cada componente
+         * de acordo com a primeira letra encontrada na netlist
+         */
         void build(string type, vector<string> element)
         {
-            if (type == "R") {
+            if (type == "R") { // Constroi o resistor
                 Resistor *component = new Resistor(
                     element[0],
                     stoi(element[1]),
@@ -233,32 +310,32 @@ class Factory
                 );
                 componentes.push_back(component);
             } else if (type == "C") {
-                Capacitor *component = new Capacitor(
+                Capacitor *component = new Capacitor( // Constroi o capacitor
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
                     stod(element[3])
                 );
                 component->setPasso(getPasso());
-                if (getTempo() == 0) {
+                if (getTempo() == 0) { //Define o passo a ser utilizado no instante 0 do capacitor
                     component->setPasso(0);
                 }
                 componentes.push_back(component);
             } else if (type == "L") {
-                Indutor *component = new Indutor(
+                Indutor *component = new Indutor( // Constroi o indutor
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
                     stod(element[3])
                 );
                 component->setPasso(getPasso());
-                if (getTempo() == 0) {
+                if (getTempo() == 0) { //Define o passo a ser utilizado no instante 0 do capacitor
                     component->setPasso(0);
                 }
                 auxNodes.push_back("j" + component->getNome());
                 componentes.push_back(component);
             } else if (type == "E") {
-                TensaoTensao *component = new TensaoTensao(
+                TensaoTensao *component = new TensaoTensao( // Constroi uma fonte de tensao controlada por tensao
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -267,9 +344,9 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back("j" + component->getNome());
+                auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "F") {
-                CorrenteCorrente *component = new CorrenteCorrente(
+                CorrenteCorrente *component = new CorrenteCorrente( // Constroi uma fonte de corrente controlada por correte
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -278,9 +355,9 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back("j" + component->getNome());
+                auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "G") {
-                CorrenteTensao *component = new CorrenteTensao(
+                CorrenteTensao *component = new CorrenteTensao( // Constroi uma fonte de corrente controlada por tensao
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -290,7 +367,7 @@ class Factory
                 );
                 componentes.push_back(component);
             } else if (type == "H") {
-                TensaoCorrente *component = new TensaoCorrente(
+                TensaoCorrente *component = new TensaoCorrente( //Constroi uma fonte de tensao controlada por corrente
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -299,8 +376,8 @@ class Factory
                     stod(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back("jx" + component->getNome());
-                auxNodes.push_back("jy" + component->getNome());
+                auxNodes.push_back("jx" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
+                auxNodes.push_back("jy" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "O") {
                 AmpOp *component = new AmpOp(
                     element[0],
@@ -310,9 +387,9 @@ class Factory
                     stoi(element[4])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back("j" + component->getNome());
+                auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "N") {
-                ResistorNLinear *component = new ResistorNLinear(
+                ResistorNLinear *component = new ResistorNLinear( // Constroi um resistor nao linear
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -327,7 +404,7 @@ class Factory
                 );
                 componentes.push_back(component);
             } else if (type == "K") {
-                Transformador *component = new Transformador(
+                Transformador *component = new Transformador( // Constroi um transformador
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -336,9 +413,9 @@ class Factory
                     stof(element[5])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back("j" + component->getNome());
+                auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "$") {
-                Chave *component = new Chave(
+                Chave *component = new Chave( // Constroi uma chave
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
@@ -351,16 +428,16 @@ class Factory
                 componentes.push_back(component);
             } else if (type == "V") {
                 if ((element[3]) == "DC") {
-                    TensaoDC *component = new TensaoDC(
+                    TensaoDC *component = new TensaoDC( // Constroi uma fonte de tensao DC
                         element[0],
                         stoi(element[1]),
                         stoi(element[2]),
                         stod(element[4])
                     );
                     componentes.push_back(component);
-                    auxNodes.push_back("j" + component->getNome());
+                    auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
                 } else if ((element[3]) == "SIN") {
-                    TensaoSenoidal *component = new TensaoSenoidal(
+                    TensaoSenoidal *component = new TensaoSenoidal( // Constroi uma fonte de tensao senoidal
                         element[0],
                         stoi(element[1]),
                         stoi(element[2]),
@@ -373,10 +450,10 @@ class Factory
                         stod(element[10]),
                         tempo
                     );
-                    componentes.push_back(component);
+                    componentes.push_back(component); // Adiciona o no auxiliar de acordo com a estampa
                     auxNodes.push_back("j" + component->getNome());
                 } else if ((element[3]) == "PULSE") {
-                    TensaoPulso *component = new TensaoPulso(
+                    TensaoPulso *component = new TensaoPulso( // Constroi uma fonte de tensao pulsada
                         element[0],
                         stoi(element[1]),
                         stoi(element[2]),
@@ -392,13 +469,13 @@ class Factory
                         getPasso()
                     );
                     componentes.push_back(component);
-                    auxNodes.push_back("j" + component->getNome());
+                    auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
                 } else {
                     throw invalid_argument("Tipo de Fonte desconhecida");
                 }
             } else if (type == "I") {
                 if ((element[3]) == "DC") {
-                    CorrenteDC *component = new CorrenteDC(
+                    CorrenteDC *component = new CorrenteDC( // Constroi uma fonte de corrente DC
                         element[0],
                         stoi(element[1]),
                         stoi(element[2]),
@@ -406,7 +483,7 @@ class Factory
                     );
                     componentes.push_back(component);
                 } else if ((element[3]) == "SIN") {
-                    CorrenteSenoidal *component = new CorrenteSenoidal(
+                    CorrenteSenoidal *component = new CorrenteSenoidal( // Constroi uma fonte de corrente senoidal
                         element[0],
                         stoi(element[1]),
                         stoi(element[2]),
@@ -421,7 +498,7 @@ class Factory
                     );
                     componentes.push_back(component);
                 } else if ((element[3]) == "PULSE") {
-                    CorrentePulso *component = new CorrentePulso(
+                    CorrentePulso *component = new CorrentePulso( // Constroi uma fonte de corrente pulsada
                         element[0],
                         stoi(element[1]),
                         stoi(element[2]),
@@ -440,7 +517,7 @@ class Factory
                 } else {
                     throw invalid_argument("Tipo de Fonte desconhecida");
                 }
-            } else if (type == ".") {
+            } else if (type == ".") { // Inicia parametros da analise por trapezio
                 setTempoFinal(stod(element[1]));
                 setPasso(stod(element[2]));
                 setMetodo(element[3]);
