@@ -182,7 +182,7 @@ int main()
          */
         if (linear == false) {
             bool converge = false;
-            for (int n = 1; n <= 50; n++) {
+            for (int n = 1; n <= 20; n++) {
                 for (int i = 0; i < numeroComponentes; i++) {
                     if (components->getComponents()[i]->getNome().substr(0,1) == "$" ||
                         components->getComponents()[i]->getNome().substr(0,1) == "N") {
