@@ -23,7 +23,7 @@ class Pulso : public FonteIndependente
         Pulso(string n, int a, int b,
             double a1, double a2, double delay,
             double tSub, double tDes, double tOn,
-            double per, double cic, double t) : FonteIndependente(n, a, b)
+            double per, double cic, double t, double p) : FonteIndependente(n, a, b)
         {
             setAmp1(a1);
             setAmp2(a2);
@@ -34,6 +34,7 @@ class Pulso : public FonteIndependente
             setPeriodo(per);
             setCiclo(cic);
             setTempo(t);
+            setPasso(p);
             setValor();
         }
 
@@ -85,6 +86,14 @@ class Pulso : public FonteIndependente
         }
 
         /**
+         * Define o tempo de passo
+         */
+        void setPasso(double p)
+        {
+            passo = p;
+        }
+
+        /**
          * Define o tempo em que a fonte fica na amplitude 2
          * @param tOn tempo da fonte ligada
          */
@@ -126,6 +135,14 @@ class Pulso : public FonteIndependente
         double getAmp1()
         {
             return amp1;
+        }
+
+        /**
+         * Retorna o passo
+         */
+        double getPasso()
+        {
+            return passo;
         }
 
         /**
@@ -201,6 +218,12 @@ class Pulso : public FonteIndependente
             /**
              * Regiao em que a fonte se encontra dentro do periodo
              */
+            if (getTempoSubida() == 0) {
+                setTempoSubida(getPasso());
+            }
+            if (getTempoDescida() == 0) {
+                setTempoDescida(getPasso());
+            }
             double iPeriod = fmod((getTempo() - getAtraso()), getPeriodo());
 
             if (getTempo() <= getAtraso()) {
@@ -286,6 +309,10 @@ class Pulso : public FonteIndependente
          * instante de tempo
          */
         double valor;
+        /**
+         * Passo da analise do trapezio
+         */
+        double passo;
 };
 
 #endif

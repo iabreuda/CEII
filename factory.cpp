@@ -388,7 +388,8 @@ class Factory
                         stod(element[9]),
                         stod(element[10]),
                         stod(element[11]),
-                        tempo
+                        tempo,
+                        getPasso()
                     );
                     componentes.push_back(component);
                     auxNodes.push_back("j" + component->getNome());
@@ -432,7 +433,8 @@ class Factory
                         stod(element[9]),
                         stod(element[10]),
                         stod(element[11]),
-                        tempo
+                        tempo,
+                        getPasso()
                     );
                     componentes.push_back(component);
                 } else {

@@ -19,8 +19,8 @@ class TensaoPulso : public Pulso
         TensaoPulso(string n, int a, int b,
             double a1, double a2, double delay,
             double tSub, double tDes, double tOn,
-            double per, double cic, double t) :
-            Pulso(n, a, b, a1, a2, delay, tSub, tDes, tOn, per, cic, t)
+            double per, double cic, double t, double p) :
+            Pulso(n, a, b, a1, a2, delay, tSub, tDes, tOn, per, cic, t, p)
         {
         }
 
