@@ -181,18 +181,16 @@ bool comparar(vector<double> vetor1, vector<double> vetor2)
 
 bool is_not_digit(char c)
 {
-    return !std::isdigit(c);
+    return ! isdigit(c);
 }
 
-bool numeric_string_compare(const std::string& s1, const std::string& s2)
+bool numeric_string_compare(const string& s1, const string& s2)
 {
-    // handle empty strings...
+    string::const_iterator it1 = s1.begin(), it2 = s2.begin();
 
-    std::string::const_iterator it1 = s1.begin(), it2 = s2.begin();
-
-    if (std::isdigit(s1[0]) && std::isdigit(s2[0])) {
+    if (isdigit(s1[0]) && isdigit(s2[0])) {
         int n1, n2;
-        std::stringstream ss(s1);
+        stringstream ss(s1);
         ss >> n1;
         ss.clear();
         ss.str(s2);
@@ -204,6 +202,6 @@ bool numeric_string_compare(const std::string& s1, const std::string& s2)
         it2 = find_if(s2.begin(), s2.end(), is_not_digit);
     }
 
-    return std::lexicographical_compare(it1, s1.end(), it2, s2.end());
+    return lexicographical_compare(it1, s1.end(), it2, s2.end());
 }
 #endif
