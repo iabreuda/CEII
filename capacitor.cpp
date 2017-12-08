@@ -115,13 +115,10 @@ class Capacitor : public Components
                  */
                 setCorrente((((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente());
             } else {
-                condutancia[getNoA()][getNoA()] += 10e9;
-                condutancia[getNoB()][getNoB()] += 10e9;
-                condutancia[getNoA()][getNoB()] += -10e9;
-                condutancia[getNoB()][getNoA()] += -10e9;
-
-                correntes[getNoA()] += getCorrente();
-                correntes[getNoB()] += -1*getCorrente();
+                condutancia[getNoA()][getNoA()] += 10e-9;
+                condutancia[getNoB()][getNoB()] += 10e-9;
+                condutancia[getNoA()][getNoB()] += -10e-9;
+                condutancia[getNoB()][getNoA()] += -10e-9;
             }
 
         }

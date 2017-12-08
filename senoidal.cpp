@@ -199,7 +199,7 @@ class Senoidal : public FonteIndependente
             if (getTempo() <= getAtraso()) {
                 valor = getNivelDC();
             }
-            if (getTempo() >= (1/getFrequencia() * getCiclos()) + getAtraso()) {
+            if (getTempo() > (1/getFrequencia() * getCiclos()) + getAtraso()) {
                 valor = getNivelDC();
             }
         }

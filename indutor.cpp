@@ -124,7 +124,10 @@ class Indutor : public Components
                 condutancia[pos][pos] += (2 * getIndutancia()) / passo;
                 correntes[pos] += (((2 * getIndutancia()) / passo) * corrente) + tensaoRamo;
             } else {
-                condutancia[pos][pos] += 10e9;
+                condutancia[getNoA()][getNoA()] += 10e9;
+                condutancia[getNoB()][getNoB()] += 10e9;
+                condutancia[getNoA()][getNoB()] += -10e9;
+                condutancia[getNoB()][getNoA()] += -10e9;
             }
         }
 

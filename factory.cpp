@@ -400,7 +400,8 @@ class Factory
                     stod(element[7]),
                     stod(element[8]),
                     stod(element[9]),
-                    stod(element[10])
+                    stod(element[10]),
+                    tempo
                 );
                 componentes.push_back(component);
             } else if (type == "K") {

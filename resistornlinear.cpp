@@ -18,13 +18,15 @@ class ResistorNLinear : public Components
             double x1, double y1,
             double x2, double y2,
             double x3, double y3,
-            double x4, double y4) : Components(n, a, b)
+            double x4, double y4,
+            double t) : Components(n, a, b)
         {
             setLinearidade(false);
             setPonto1(x1,y1);
             setPonto2(x2,y2);
             setPonto3(x3,y3);
             setPonto4(x4,y4);
+            setTempo(t);
         }
 
         /**
@@ -154,6 +156,22 @@ class ResistorNLinear : public Components
         }
 
         /**
+         * Define o valor do tempo
+         */
+        void setTempo(double t)
+        {
+            tempo = t;
+        }
+
+        /**
+         * Retorna o tempo
+         */
+        double getTempo()
+        {
+            return tempo;
+        }
+
+        /**
          * Escolhe a reta de acordo com o ponto de operacao da tensao
          */
         double getInclinacao(double tensao)
@@ -171,6 +189,9 @@ class ResistorNLinear : public Components
          */
         double getResistencia(double tensao)
         {
+            if (getInclinacao(tensao) == 0) {
+                return 10e12;
+            }
             return 1/getInclinacao(tensao);
         }
 
@@ -217,7 +238,6 @@ class ResistorNLinear : public Components
             if (getNoB() == 0) {
                 tensaoRamo = resultado[getNoA()];
             }
-
             condutancia[getNoA()][getNoA()] += 1/getResistencia(tensaoRamo);
             condutancia[getNoB()][getNoB()] += 1/getResistencia(tensaoRamo);
             condutancia[getNoA()][getNoB()] += -1/getResistencia(tensaoRamo);
@@ -266,21 +286,22 @@ class ResistorNLinear : public Components
          * Ponto 1
          */
         vector<double> ponto1;
-
         /**
          * Ponto 2
          */
         vector<double> ponto2;
-
         /**
          * Ponto 3
          */
         vector<double> ponto3;
-
         /**
          * Ponto 4
          */
         vector<double> ponto4;
+        /**
+         * instante de tempo
+         */
+        double tempo;
 };
 
 #endif

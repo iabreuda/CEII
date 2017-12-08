@@ -96,7 +96,7 @@ int main()
         outfile << " " << nodes[n];
     }
     outfile << endl;
-    for (double t = components->getTempo(); t <= components->getTempoFinal(); t += components->getPasso()) {
+    for (double t = components->getTempo(); t <= components->getTempoFinal() + 10e-15; t += components->getPasso()) { // 10e-15 para comparacao com double
         /**
          * Criando vetor de condutancai e correntes
          * de acordo com o numero de nos no netlist
