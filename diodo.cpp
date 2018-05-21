@@ -74,7 +74,7 @@ class Diodo : public Components
             if (tensao > 0.7) {
                 tensao = 0.7; // Limita o valor da tensao em 0.7
             }
-            return (getCorrenteReversa() * (exp(tensao / getTensaoTemp()) - 1)) - (1/getCorrente(tensao) * tensao);
+            return (getCorrenteReversa() * (exp(tensao / getTensaoTemp()) - 1)) - (1/getResistencia(tensao) * tensao);
         }
 
         /**
