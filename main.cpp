@@ -50,7 +50,7 @@ int main()
 
         cout << "EEL525 - Circutos Eletricos II\n";
         cout << "UFRJ/Poli/DEL - Departamento de Engenharia Eletronica\n";
-        cout << "Desenvolvido por: Eduardo Pires, Igor Abreu e Jonas Degrave\n";
+        cout << "Desenvolvido por: Anni Provietti, Gabriella Felgas e Igor Abreu\n";
         cout << "Programa de analise no dominio do tempo de elementos lineares e nao lineares\n";
         cout << "Nome do arquivo contendo a NetList: [ex. minha.net] ";
         cin >> fileName;
