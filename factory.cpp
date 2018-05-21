@@ -24,7 +24,7 @@
  */
 #include "capacitor.cpp"
 /**
- * Modelo de resistor linear
+ * Modelo de indutor
  */
 #include "indutor.cpp"
 /**
@@ -44,9 +44,9 @@
  */
 #include "tensaocorrente.cpp"
 /**
- * Modelo de resistor nlinear
+ * Modelo de Transistor Bipolar
  */
-#include "resistornlinear.cpp"
+#include "bipolar.cpp"
 /**
  * Modelo de amplificador operacional
  */
@@ -56,9 +56,9 @@
  */
 #include "transformador.cpp"
 /**
- * Modelo de transformador
+ * Modelo de Diodo
  */
-#include "chave.cpp"
+#include "diodo.cpp"
 /**
  * Modelo de fonte de tensao dc
  */
@@ -144,6 +144,14 @@ class Factory
         double getTempo()
         {
             return tempo;
+        }
+
+        /**
+         * Retorna o valor de teta
+         */
+        double getTeta()
+        {
+            return teta;
         }
 
         /**
@@ -233,11 +241,19 @@ class Factory
         }
 
         /**
-         * Verifica se o metodo de analise e trapezio
+         * Define o valor de teta a ser usado no metodo de integracao
          */
-        bool isTrapezio()
+        void setTeta(double tet)
         {
-            return getMetodo() == "TRAP";
+            teta = tet;
+        }
+
+        /**
+         * Verifica se o metodo de analise e teta
+         */
+        bool isTeta()
+        {
+            return getMetodo() == "TETA";
         }
 
         /**
@@ -279,6 +295,10 @@ class Factory
          */
         string metodo;
         /**
+         * Valor de teta a ser considerado no metodo de integracao
+         */
+        double teta;
+        /**
          * Instante de tempo a ser analisado
          */
         double tempo;
@@ -316,6 +336,7 @@ class Factory
                     stoi(element[2]),
                     stod(element[3])
                 );
+                component->setTeta(getTeta());
                 component->setPasso(getPasso());
                 if (getTempo() == 0) { //Define o passo a ser utilizado no instante 0 do capacitor
                     component->setPasso(0);
@@ -329,6 +350,7 @@ class Factory
                     stod(element[3])
                 );
                 component->setPasso(getPasso());
+                component->setTeta(getTeta());
                 if (getTempo() == 0) { //Define o passo a ser utilizado no instante 0 do capacitor
                     component->setPasso(0);
                 }
@@ -388,20 +410,13 @@ class Factory
                 );
                 componentes.push_back(component);
                 auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
-            } else if (type == "N") {
-                ResistorNLinear *component = new ResistorNLinear( // Constroi um resistor nao linear
+            } else if (type == "D") {
+                Diodo *component = new Diodo( // Constroi um diodo
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
                     stod(element[3]),
-                    stod(element[4]),
-                    stod(element[5]),
-                    stod(element[6]),
-                    stod(element[7]),
-                    stod(element[8]),
-                    stod(element[9]),
-                    stod(element[10]),
-                    tempo
+                    stod(element[4])
                 );
                 componentes.push_back(component);
             } else if (type == "K") {
@@ -415,16 +430,20 @@ class Factory
                 );
                 componentes.push_back(component);
                 auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
-            } else if (type == "$") {
-                Chave *component = new Chave( // Constroi uma chave
+            } else if (type == "Q") {
+                Bipolar *component = new Bipolar( // Constroi um Bipolar
                     element[0],
                     stoi(element[1]),
                     stoi(element[2]),
                     stoi(element[3]),
-                    stoi(element[4]),
+                    0, // Bipolar so tem 3 nos
+                    element[4],
                     stod(element[5]),
                     stod(element[6]),
-                    stod(element[7])
+                    stod(element[7]),
+                    stod(element[8]),
+                    stod(element[9]),
+                    stod(element[10])
                 );
                 componentes.push_back(component);
             } else if (type == "V") {
@@ -522,10 +541,11 @@ class Factory
                 setTempoFinal(stod(element[1]));
                 setPasso(stod(element[2]));
                 setMetodo(element[3]);
-                setPassoPonto(stod(element[4]));
+                setTeta(stod(element[4]));
+                setPassoPonto(stod(element[5]));
                 //@todo melhorar a excecao
-                if (! isTrapezio()) {
-                    throw invalid_argument("So faz analise por trapezio, sry");
+                if (! isTeta()) {
+                    throw invalid_argument("So faz analise teta, sry");
                 }
             } else if (type == "*"){
                 //comentario so ignorar
