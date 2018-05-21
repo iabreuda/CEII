@@ -37,6 +37,26 @@ class Capacitor : public Components
         }
 
         /**
+         * Define o parametro teta
+         * @param t valor de teta
+         */
+        void setTeta(double t)
+        {
+            teta = t;
+            if (t == 0) {
+                teta = 0.001; // Evitar valores de teta igual a 0 para nao dar divisao por 0
+            }
+        }
+
+        /**
+         * Retorna o valor de teta
+         */
+        double getTeta()
+        {
+            return teta;
+        }
+
+        /**
          * Define a corrent no capacitor
          * @param v valor da corrente
          */
@@ -81,12 +101,12 @@ class Capacitor : public Components
             vector<string> nodes,
             vector<double> resultado)
         {
-                /**
-                 * Dividido em duas etapas de tempo, para o instante inicial consideramos as tensoes
-                 * e correntes zeradas, no caso do capacitor, ele possui uma condutancia infinita
-                 * para todo os outros casos consideramos a estampa normal do modelo de trapezio
-                 */
-                if (passo != 0) {
+            /**
+             * Dividido em duas etapas de tempo, para o instante inicial consideramos as tensoes
+             * e correntes zeradas, no caso do capacitor, ele possui uma condutancia infinita
+             * para todo os outros casos consideramos a estampa normal do modelo de trapezio
+             */
+            if (passo != 0) {
                 /**
                  * Pega a tensao no ramo no instante de tempo anterior
                  */
@@ -101,19 +121,19 @@ class Capacitor : public Components
                     tensaoRamo = resultado[getNoA()];
                 }
 
-                condutancia[getNoA()][getNoA()] += (2 * getCapacitancia())/passo;
-                condutancia[getNoB()][getNoB()] += (2 * getCapacitancia())/passo;
-                condutancia[getNoA()][getNoB()] += (-2 * getCapacitancia())/passo;
-                condutancia[getNoB()][getNoA()] += (-2 * getCapacitancia())/passo;
+                condutancia[getNoA()][getNoA()] += (getCapacitancia()/(passo * getTeta()));
+                condutancia[getNoB()][getNoB()] += (getCapacitancia()/(passo * getTeta()));
+                condutancia[getNoA()][getNoB()] += -1*(getCapacitancia()/(passo * getTeta()));
+                condutancia[getNoB()][getNoA()] += -1*(getCapacitancia()/(passo * getTeta()));
 
-                correntes[getNoA()] += (((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente(); /*getCorrente vale j no instante anterior*/
-                correntes[getNoB()] += (((-2 * getCapacitancia())/passo) * tensaoRamo) - getCorrente(); /*getCorrente vale j no instante anterior*/
+                correntes[getNoA()] += ((getCapacitancia()/ (passo * getTeta())) * tensaoRamo) + getCorrente(); /*getCorrente vale j no instante anterior*/
+                correntes[getNoB()] += (((-1*getCapacitancia())/(passo * getTeta())) * tensaoRamo) - getCorrente(); /*getCorrente vale j no instante anterior*/
                 /**
                  * Define a nova corrente usando tensao no instante e a corrente no instante anterior
                  * esse nova corrente agora passa a ser a corrente na fonte de corrente para o instante
                  * atual
                  */
-                setCorrente((((2 * getCapacitancia())/passo) * tensaoRamo) + getCorrente());
+                setCorrente(((getCapacitancia()/(passo * getTeta())) * tensaoRamo) + (((1 - getTeta())/ getTeta()) * getCorrente()));
             } else {
                 condutancia[getNoA()][getNoA()] += 10e-9;
                 condutancia[getNoB()][getNoB()] += 10e-9;
@@ -138,6 +158,10 @@ class Capacitor : public Components
          * valor da capacitancia do capacitor
          */
         double capacitancia;
+        /**
+         * Valor do parametro teta utilizado na integracao
+         */
+        double teta;
 };
 
 #endif

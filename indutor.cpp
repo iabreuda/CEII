@@ -37,6 +37,26 @@ class Indutor : public Components
         }
 
         /**
+         * Define o parametro teta
+         * @param t valor de teta
+         */
+        void setTeta(double t)
+        {
+            teta = t;
+            if (t == 0) {
+                teta = 0.001; // Evitar valores de teta igual a 0 para nao dar divisao por 0
+            }
+        }
+
+        /**
+         * Retorna o valor de teta
+         */
+        double getTeta()
+        {
+            return teta;
+        }
+
+        /**
          * Define a corrent no indutor
          * @param v valor da corrente
          */
@@ -81,7 +101,7 @@ class Indutor : public Components
         }
 
         /**
-         * Estanpa da matriz nodal modificada fonte de tensao
+         * Estanpa da matriz nodal modificada indutos
          * @param condutancia matriz de condutancia
          * @param correntes   matriz de correntes
          * @param nodes       matriz de nos
@@ -121,8 +141,8 @@ class Indutor : public Components
 
                 corrente = resultado[pos];
 
-                condutancia[pos][pos] += (2 * getIndutancia()) / passo;
-                correntes[pos] += (((2 * getIndutancia()) / passo) * corrente) + tensaoRamo;
+                condutancia[pos][pos] += (getIndutancia()) / (passo * getTeta());
+                correntes[pos] += (((getIndutancia()) / (passo * getTeta())) * corrente) +  (((1 - getTeta())/(getTeta())) * tensaoRamo);
             } else {
                 condutancia[getNoA()][getNoA()] += 10e9;
                 condutancia[getNoB()][getNoB()] += 10e9;
@@ -146,6 +166,10 @@ class Indutor : public Components
          * valor da indutancia do capacitor
          */
         double indutancia;
+        /**
+         * Valor do parametro teta utilizado na integracao
+         */
+        double teta;
 };
 
 #endif
