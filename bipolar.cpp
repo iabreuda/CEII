@@ -209,10 +209,19 @@ class Bipolar : public Components4t
             condutancia[getNoC()][getNoB()] += -1/resistenciaEmissor;;
             condutancia[getNoC()][getNoC()] += 1/resistenciaEmissor;;
 
-            correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
-            correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
-                + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
-            correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+            if (getTipo() == "NPN") {
+                correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
+                correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
+                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
+                correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+            } else if (getTipo() == "PNP") {
+                correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
+                correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
+                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
+                correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+            } else {
+                throw invalid_argument("Tipo de transistor desconhecido");
+            }
         }
 
         /**
@@ -270,10 +279,19 @@ class Bipolar : public Components4t
             condutancia[getNoC()][getNoB()] += 1/resistenciaEmissor;;
             condutancia[getNoC()][getNoC()] += -1/resistenciaEmissor;;
 
-            correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
-            correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
-                + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
-            correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+            if (getTipo() == "NPN") {
+                correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
+                correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
+                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
+                correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+            } else if (getTipo() == "PNP") {
+                correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
+                correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
+                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
+                correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+            } else {
+                throw invalid_argument("Tipo de transistor desconhecido");
+            }
         }
 
     private:
