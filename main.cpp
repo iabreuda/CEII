@@ -151,6 +151,7 @@ int main()
                 int noB = components->getComponents()[i]->getNoB();
                 /**
                  * Pega a tensao nodal para a matriz de resultados atuais e estampas atuais
+                 * @todo se nao exisitir igualar a zero !IMPORTANT
                  */
                 double tensaoRamo = resultado[noA] - resultado[noB];
                 /**
@@ -180,12 +181,12 @@ int main()
          * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
          * newton raphson e so feito no instante de tempo zero
          */
-        if (linear == false) {
+        if (linear == false) { // @todo VERIFICAR SE VAI FUNCIONAR COM A REMOCAO DO NO
             bool converge = false;
             for (int n = 1; n <= 20; n++) {
                 for (int i = 0; i < numeroComponentes; i++) {
-                    if (components->getComponents()[i]->getNome().substr(0,1) == "$" ||
-                        components->getComponents()[i]->getNome().substr(0,1) == "N") {
+                    if (components->getComponents()[i]->getNome().substr(0,1) == "D" ||
+                        components->getComponents()[i]->getNome().substr(0,1) == "Q") {
                         /*Desestampa e reestampa componentes nao lineares*/
                         components->getComponents()[i]->desestampar(condutancia, correntes, resultadoAnterior);
                         components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
