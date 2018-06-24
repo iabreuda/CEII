@@ -202,23 +202,34 @@ class Bipolar : public Components4t
              * Estampa do Bipolar
              */
             condutancia[getNoA()][getNoA()] += 1/resistenciaColetor;
-            condutancia[getNoA()][getNoB()] += -1/resistenciaColetor;
-            condutancia[getNoB()][getNoA()] += -1/resistenciaColetor;
-            condutancia[getNoB()][getNoB()] += (1/resistenciaColetor + 1/resistenciaEmissor);
-            condutancia[getNoB()][getNoC()] += -1/resistenciaEmissor;
-            condutancia[getNoC()][getNoB()] += -1/resistenciaEmissor;;
-            condutancia[getNoC()][getNoC()] += 1/resistenciaEmissor;;
+            condutancia[getNoC()][getNoC()] += 1/resistenciaEmissor;
 
             if (getTipo() == "NPN") {
-                correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
-                correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
-                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
-                correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+                condutancia[getNoA()][getNoB()] += (-1/resistenciaColetor + (getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoA()][getNoC()] += (-1*(getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoB()][getNoA()] += (-1/resistenciaColetor + (getAlfaR()*(1/resistenciaColetor)));
+                condutancia[getNoB()][getNoB()] += (1/resistenciaColetor + 1/resistenciaEmissor + (-1*getAlfaR()*(1/resistenciaColetor)) +
+                    (-1*(getAlfa()*(1/resistenciaEmissor))));
+                condutancia[getNoB()][getNoC()] += (-1/resistenciaEmissor + (getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoC()][getNoA()] += (-1*getAlfaR()*(1/resistenciaColetor));
+                condutancia[getNoC()][getNoB()] += (-1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)));
+
+                correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor));
+                correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) - correnteEmissor - correnteColetor);
+                correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor));
             } else if (getTipo() == "PNP") {
-                correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
-                correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
-                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
-                correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+                condutancia[getNoA()][getNoB()] += (-1/resistenciaColetor + -1*(getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoA()][getNoC()] += ((getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoB()][getNoA()] += (-1/resistenciaColetor + -1*(getAlfaR()*(1/resistenciaColetor)));
+                condutancia[getNoB()][getNoB()] += (1/resistenciaColetor + 1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)) +
+                    (getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoB()][getNoC()] += (-1/resistenciaEmissor + -1*(getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoC()][getNoA()] += (getAlfaR()*(1/resistenciaColetor));
+                condutancia[getNoC()][getNoB()] += (-1/resistenciaEmissor + -1*(getAlfaR()*(1/resistenciaColetor)));
+
+                correntes[getNoA()] += ((getAlfa()*correnteEmissor) - correnteColetor);
+                correntes[getNoB()] += (correnteEmissor + correnteColetor + -1*(getAlfa()*correnteEmissor) + -1*(getAlfaR()*correnteColetor));
+                correntes[getNoC()] += ((getAlfaR()*correnteColetor) - correnteEmissor);
             } else {
                 throw invalid_argument("Tipo de transistor desconhecido");
             }
@@ -272,23 +283,34 @@ class Bipolar : public Components4t
              * Estampa do Bipolar
              */
             condutancia[getNoA()][getNoA()] += -1/resistenciaColetor;
-            condutancia[getNoA()][getNoB()] += 1/resistenciaColetor;
-            condutancia[getNoB()][getNoA()] += 1/resistenciaColetor;
-            condutancia[getNoB()][getNoB()] += -1*(1/resistenciaColetor + 1/resistenciaEmissor);
-            condutancia[getNoB()][getNoC()] += 1/resistenciaEmissor;
-            condutancia[getNoC()][getNoB()] += 1/resistenciaEmissor;;
-            condutancia[getNoC()][getNoC()] += -1/resistenciaEmissor;;
+            condutancia[getNoC()][getNoC()] += -1/resistenciaEmissor;
 
             if (getTipo() == "NPN") {
-                correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
-                correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
-                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
-                correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+                condutancia[getNoA()][getNoB()] += -1*(-1/resistenciaColetor + (getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoA()][getNoC()] += -1*(-1*(getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoB()][getNoA()] += -1*(-1/resistenciaColetor + (getAlfaR()*(1/resistenciaColetor)));
+                condutancia[getNoB()][getNoB()] += -1*(1/resistenciaColetor + 1/resistenciaEmissor + (-1*getAlfaR()*(1/resistenciaColetor)) +
+                    (-1*(getAlfa()*(1/resistenciaEmissor))));
+                condutancia[getNoB()][getNoC()] += -1*(-1/resistenciaEmissor + (getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoC()][getNoA()] += -1*(-1*getAlfaR()*(1/resistenciaColetor));
+                condutancia[getNoC()][getNoB()] += -1*(-1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)));
+
+                correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor));
+                correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) - correnteEmissor - correnteColetor);
+                correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor));
             } else if (getTipo() == "PNP") {
-                correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor) - (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE));
-                correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) + (getAlfa()*(1/resistenciaEmissor)*tensaoRamoVBE)
-                    + (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC) - correnteEmissor - correnteColetor);
-                correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor) - (getAlfaR()*(1/resistenciaColetor)*tensaoRamoVBC));
+                condutancia[getNoA()][getNoB()] += -1*(-1/resistenciaColetor + -1*(getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoA()][getNoC()] += -1*((getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoB()][getNoA()] += -1*(-1/resistenciaColetor + -1*(getAlfaR()*(1/resistenciaColetor)));
+                condutancia[getNoB()][getNoB()] += -1*(1/resistenciaColetor + 1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)) +
+                    (getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoB()][getNoC()] += -1*(-1/resistenciaEmissor + -1*(getAlfa()*(1/resistenciaEmissor)));
+                condutancia[getNoC()][getNoA()] += -1*(getAlfaR()*(1/resistenciaColetor));
+                condutancia[getNoC()][getNoB()] += -1*(-1/resistenciaEmissor + -1*(getAlfaR()*(1/resistenciaColetor)));
+
+                correntes[getNoA()] += -1*((getAlfa()*correnteEmissor) - correnteColetor);
+                correntes[getNoB()] += -1*(correnteEmissor + correnteColetor + -1*(getAlfa()*correnteEmissor) + -1*(getAlfaR()*correnteColetor));
+                correntes[getNoC()] += -1*((getAlfaR()*correnteColetor) - correnteEmissor);
             } else {
                 throw invalid_argument("Tipo de transistor desconhecido");
             }
