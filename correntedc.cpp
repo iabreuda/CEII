@@ -33,6 +33,20 @@ class CorrenteDC : public Dc
             correntes[getNoA()] += -1*getValor();
             correntes[getNoB()] += getValor();
         }
+
+        /**
+         * Desestampa da matriz nodal modificada para uma fonte de corrente
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void desestampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<double> resultado)
+        {
+            correntes[getNoA()] += getValor();
+            correntes[getNoB()] += -1*getValor();
+        }
 };
 
 #endif
