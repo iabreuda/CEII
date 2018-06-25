@@ -140,7 +140,7 @@ int main()
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
         resultadoAnterior = resultado;
-        resultado = gauss(condutancia, correntes, components->getNodesSize());
+        resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents());
 
         /**
          * Teste de adicionar a corrente apos o calculo
@@ -193,7 +193,7 @@ int main()
                     }
                 }
                 resultadoAnterior = resultado;
-                resultado = gauss(condutancia, correntes, components->getNodesSize());
+                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents());
 
                 converge = comparar(resultadoAnterior, resultado);
                 if (converge == true) {
