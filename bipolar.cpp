@@ -177,18 +177,24 @@ class Bipolar : public Components4t
              */
             double tensaoRamoVBE = resultado[getNoB()] - resultado[getNoC()]; // Tensao VBE
             double tensaoRamoVBC = resultado[getNoB()] - resultado[getNoA()]; // Tensao VBC
+            double tensaoRamoVEB = resultado[getNoC()] - resultado[getNoB()]; // Tensao VEB
+            double tensaoRamoVCB = resultado[getNoA()] - resultado[getNoB()]; // Tensao VCB
             /**
              * Descarta o no Zero uma vez que ele e linearmente dependente
              */
             if (getNoA() == 0) {
                 tensaoRamoVBC = resultado[getNoB()]; // Tensao VBC
+                tensaoRamoVCB = -1*resultado[getNoB()]; // Tensao VCB
             }
             if (getNoB() == 0) {
                 tensaoRamoVBE = -1*resultado[getNoC()]; // Tensao VBE
                 tensaoRamoVBC = -1*resultado[getNoA()]; // Tensao VBC
+                tensaoRamoVEB = resultado[getNoC()]; // Tensao VEB
+                tensaoRamoVCB = resultado[getNoA()]; // Tensao VCB
             }
             if (getNoC() == 0) {
-                tensaoRamoVBE = 1*resultado[getNoB()]; // Tensao VBE
+                tensaoRamoVBE = resultado[getNoB()]; // Tensao VBE
+                tensaoRamoVEB = -1*resultado[getNoB()]; // Tensao VEB
             }
 
             if (getTipo() == "NPN") {
@@ -237,7 +243,7 @@ class Bipolar : public Components4t
                     "aie", getNoC(), getNoB(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
                 );
                 /**
-                 * Estampa fontes de corrente
+                 * Estampa fontes de corrente controladas
                  */
                 correnteAlfaGeVbe->estampar(condutancia, correntes, nodes, resultado);
                 correnteAlfaRGcVbc->estampar(condutancia, correntes, nodes, resultado);
@@ -259,10 +265,10 @@ class Bipolar : public Components4t
                 /**
                  * Parametros do diodo
                  */
-                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
-                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
-                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
-                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
+                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVCB);
+                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVCB);
+                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVEB);
+                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVEB);
                 /**
                  * Initializa as fontes de corrente
                  */
@@ -287,7 +293,7 @@ class Bipolar : public Components4t
                     "aie", getNoB(), getNoC(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
                 );
                 /**
-                 * Estampa fontes de corrente
+                 * Estampa fontes de corrente controladas
                  */
                 correnteAlfaGeVbe->estampar(condutancia, correntes, nodes, resultado);
                 correnteAlfaRGcVbc->estampar(condutancia, correntes, nodes, resultado);
@@ -311,20 +317,25 @@ class Bipolar : public Components4t
              */
             double tensaoRamoVBE = resultado[getNoB()] - resultado[getNoC()]; // Tensao VBE
             double tensaoRamoVBC = resultado[getNoB()] - resultado[getNoA()]; // Tensao VBC
+            double tensaoRamoVEB = resultado[getNoC()] - resultado[getNoB()]; // Tensao VEB
+            double tensaoRamoVCB = resultado[getNoA()] - resultado[getNoB()]; // Tensao VCB
             /**
              * Descarta o no Zero uma vez que ele e linearmente dependente
              */
             if (getNoA() == 0) {
                 tensaoRamoVBC = resultado[getNoB()]; // Tensao VBC
+                tensaoRamoVCB = -1*resultado[getNoB()]; // Tensao VCB
             }
             if (getNoB() == 0) {
                 tensaoRamoVBE = -1*resultado[getNoC()]; // Tensao VBE
                 tensaoRamoVBC = -1*resultado[getNoA()]; // Tensao VBC
+                tensaoRamoVEB = resultado[getNoC()]; // Tensao VEB
+                tensaoRamoVCB = resultado[getNoA()]; // Tensao VCB
             }
             if (getNoC() == 0) {
-                tensaoRamoVBE = 1*resultado[getNoB()]; // Tensao VBE
+                tensaoRamoVBE = resultado[getNoB()]; // Tensao VBE
+                tensaoRamoVEB = -1*resultado[getNoB()]; // Tensao VEB
             }
-
 
             if (getTipo() == "NPN") {
                 /**
@@ -337,7 +348,7 @@ class Bipolar : public Components4t
                     "dbc", getNoB(), getNoA(), getIsBaseColetor(), getNVtBaseColetor()
                 );
                 /**
-                 * destampa os diodos
+                 * desestampa os diodos
                  */
                 diodoBaseEmissor->desestampar(condutancia, correntes, resultado);
                 diodoBaseColetor->desestampar(condutancia, correntes, resultado);
@@ -358,7 +369,7 @@ class Bipolar : public Components4t
                     "aie", getNoC(), getNoB(), getAlfaR()*correnteColetor
                 );
                 /**
-                 * DEstampa fontes de corrente
+                 * desestampa fontes de corrente
                  */
                 correnteAlfaIe->desestampar(condutancia, correntes, resultado);
                 correnteAlfaRIc->desestampar(condutancia, correntes, resultado);
@@ -372,7 +383,7 @@ class Bipolar : public Components4t
                     "aie", getNoC(), getNoB(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
                 );
                 /**
-                 * Estampa fontes de corrente
+                 * desestampa fontes de corrente controladas
                  */
                 correnteAlfaGeVbe->desestampar(condutancia, correntes, resultado);
                 correnteAlfaRGcVbc->desestampar(condutancia, correntes, resultado);
@@ -387,17 +398,17 @@ class Bipolar : public Components4t
                     "dbc", getNoA(), getNoB(), getIsBaseColetor(), getNVtBaseColetor()
                 );
                 /**
-                 * destampa os diodos
+                 * desestampa os diodos
                  */
                 diodoBaseEmissor->desestampar(condutancia, correntes, resultado);
                 diodoBaseColetor->desestampar(condutancia, correntes, resultado);
                 /**
                  * Parametros do diodo
                  */
-                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
-                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
-                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
-                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
+                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVCB);
+                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVCB);
+                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVEB);
+                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVEB);
                 /**
                  * Initializa as fontes de corrente
                  */
@@ -408,7 +419,7 @@ class Bipolar : public Components4t
                     "aie", getNoB(), getNoC(), getAlfaR()*correnteColetor
                 );
                 /**
-                 * DEstampa fontes de corrente
+                 * desestampa fontes de corrente
                  */
                 correnteAlfaIe->desestampar(condutancia, correntes, resultado);
                 correnteAlfaRIc->desestampar(condutancia, correntes, resultado);
@@ -422,7 +433,7 @@ class Bipolar : public Components4t
                     "aie", getNoB(), getNoC(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
                 );
                 /**
-                 * Estampa fontes de corrente
+                 * desestampa fontes de corrente
                  */
                 correnteAlfaGeVbe->desestampar(condutancia, correntes, resultado);
                 correnteAlfaRGcVbc->desestampar(condutancia, correntes, resultado);
