@@ -34,6 +34,22 @@ class CorrenteTensao : public FontesControladas
             condutancia[getNoB()][getNoC()] += -1*getGanho();
             condutancia[getNoB()][getNoD()] += getGanho();
         }
+
+        /**
+         * Desestampa da matriz nodal modificada para uma fonte de corrente c tensao
+         * @param condutancia matriz de condutancia
+         * @param correntes   matriz de correntes
+         * @param nodes        matris de nos
+         */
+        void desestampar(vector<vector<double> >& condutancia,
+            vector<double>& correntes,
+            vector<double> resultado)
+        {
+            condutancia[getNoA()][getNoC()] += -1*getGanho();
+            condutancia[getNoA()][getNoD()] += getGanho();
+            condutancia[getNoB()][getNoC()] += getGanho();
+            condutancia[getNoB()][getNoD()] += -1*getGanho();
+        }
 };
 
 #endif
