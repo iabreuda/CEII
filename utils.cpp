@@ -24,6 +24,10 @@
  *  - sort
  */
 #include <algorithm>
+/**
+ * Modelo basico para componentes
+ */
+#include "components.cpp"
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -53,10 +57,95 @@ const vector<string> explode(const string& phrase, char delim)
  * e a matriz de corrente, aplica a eliminacao de gauss para transformar a matriz
  * de condutividade em uma matriz identidade.
  */
-vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos)
+vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos, vector<Components*> componentes)
 {
+    int numeroComponentes = componentes.size();
     int condutanciaRows = condutancia.size();
     int correnteRows = correntes.size();
+    vector<vector<int> > somaLinhas(nos, vector<int>(nos, 0));
+    vector<vector<int> > somaColunas(nos, vector<int>(nos, 0));
+    /**
+     * numero de nos de tensao
+     */
+    vector<vector<string> > nosSomar;
+    /**
+     * Montar matriz do que tem que ser somado
+     */
+    for (int i = 0; i < numeroComponentes; i++) {
+        if (componentes[i]->getNome().substr(0,1) == "V" || // Tensao
+            componentes[i]->getNome().substr(0,1) == "E" || // Tensao por tensao ou Amp de Tensao
+            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+                somaLinhas[componentes[i]->getNoA()][componentes[i]->getNoB()] = 1;
+                somaLinhas[componentes[i]->getNoB()][componentes[i]->getNoA()] = 1;
+        }
+        if (componentes[i]->getNome().substr(0,1) == "F" || // Corrente por corrente ou Amp de Corrente
+            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+                somaColunas[componentes[i]->getNoD()][componentes[i]->getNoC()] = 1;
+                somaColunas[componentes[i]->getNoC()][componentes[i]->getNoD()] = 1;
+        }
+    }
+    /**
+    for (int x = 0; x < somaLinhas.size(); x++) {
+        for (int y = 0; y < somaLinhas[x].size(); y++) {
+            cout << somaLinhas[x][y] << " " ;
+        }
+        cout << endl;
+    }
+    */
+
+    /**
+     * Cria uma matriz de linhas para serem somadas com a reducao por AmpOp
+     */
+    for (int linha = somaLinhas.size() - 1; linha >= 0; linha--) { // considera o no 0
+        for (int coluna = somaLinhas[linha].size() - 1; coluna >= 0; coluna--) {
+            if (somaLinhas[linha][coluna] == 1) {
+                for (int col = somaLinhas[coluna].size() - 1; col >= 0; col--) {
+                    if (somaLinhas[coluna][col] == 1 && col != linha) {
+                        somaLinhas[linha][col] = 1;
+                        somaLinhas[coluna][col] = 0;
+                    } else if (col == linha) {
+                        somaLinhas[coluna][col] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Cria uma matriz de linhas para serem somadas com a reducao por AmpOp
+     */
+    for (int linha = somaLinhas.size() - 1; linha >= 0; linha--) { // considera o no 0
+        for (int coluna = somaLinhas[linha].size() - 1; coluna >= 0; coluna--) {
+            if (somaLinhas[linha][coluna] == 1) {
+                for (int col = somaLinhas[coluna].size() - 1; col >= 0; col--) {
+                    if (somaLinhas[coluna][col] == 1 && col != linha) {
+                        somaLinhas[linha][col] = 1;
+                        somaLinhas[coluna][col] = 0;
+                    } else if (col == linha) {
+                        somaLinhas[coluna][col] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+    for (int x = 0; x < somaLinhas.size(); x++) {
+        for (int y = 0; y < somaLinhas[x].size(); y++) {
+            cout << somaLinhas[x][y] << " " ;
+        }
+        cout << endl;
+    }
+    */
+
+    /*
+    for (int x = 0; x < somaLinhas.size(); x++) {
+        for (int y = 0; y < somaLinhas[x].size(); y++) {
+            cout << somaLinhas[x][y] << " " ;
+        }
+        cout << endl;
+    }
+    */
 
     /**
      * Matrizes de condutancia e conrrente devem ter os
