@@ -52,19 +52,13 @@ class TensaoCorrente : public FontesControladas
             vector<string>::iterator it2;
 
             it = find(nodes.begin(), nodes.end(), getAuxNode());
-            it2 = find(nodes.begin(), nodes.end(), getAuxNode2());
             auto pos = it - nodes.begin();
-            auto pos2 = it2 - nodes.begin();
 
-            condutancia[getNoA()][pos2] += 1;
-            condutancia[getNoB()][pos2] += -1;
             condutancia[getNoC()][pos] += 1;
             condutancia[getNoD()][pos] += -1;
-            condutancia[pos][getNoC()] += -1;
-            condutancia[pos][getNoD()] += 1;
-            condutancia[pos2][getNoA()] += -1;
-            condutancia[pos2][getNoB()] += 1;
-            condutancia[pos2][pos] += getGanho();
+            condutancia[pos][getNoA()] += -1;
+            condutancia[pos][getNoB()] += 1;
+            condutancia[pos][pos] += getGanho();
         }
 };
 
