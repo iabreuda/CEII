@@ -5,9 +5,17 @@
  */
 #include "components4t.cpp"
  /**
-  * Modelo basico do diogo
+  * Modelo basico do diodo
   */
 #include "diodo.cpp"
+ /**
+  * Modelo basico de fonte de corrente dc
+  */
+#include "correntedc.cpp"
+ /**
+  * Modelo basico de fonte contralada corrente tensao
+  */
+#include "correntetensao.cpp"
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -182,54 +190,107 @@ class Bipolar : public Components4t
             if (getNoC() == 0) {
                 tensaoRamoVBE = 1*resultado[getNoB()]; // Tensao VBE
             }
-            /**
-             * Initializa os diodos para modelagem Ebers-moll
-             */
-            Diodo *diodoBaseEmissor = new Diodo(
-                "dbe", getNoB(), getNoC(), getIsBaseEmissor(), getNVtBaseEmissor()
-            );
-            Diodo *diodoBaseColetor = new Diodo(
-                "dbc", getNoB(), getNoA(), getIsBaseColetor(), getNVtBaseColetor()
-            );
-            /**
-             * Parametros do diodo
-             */
-            double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
-            double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
-            double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
-            double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
-            /**
-             * Estampa do Bipolar
-             */
-            condutancia[getNoA()][getNoA()] += 1/resistenciaColetor;
-            condutancia[getNoC()][getNoC()] += 1/resistenciaEmissor;
 
             if (getTipo() == "NPN") {
-                condutancia[getNoA()][getNoB()] += (-1/resistenciaColetor + (getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoA()][getNoC()] += (-1*(getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoB()][getNoA()] += (-1/resistenciaColetor + (getAlfaR()*(1/resistenciaColetor)));
-                condutancia[getNoB()][getNoB()] += (1/resistenciaColetor + 1/resistenciaEmissor + (-1*getAlfaR()*(1/resistenciaColetor)) +
-                    (-1*(getAlfa()*(1/resistenciaEmissor))));
-                condutancia[getNoB()][getNoC()] += (-1/resistenciaEmissor + (getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoC()][getNoA()] += (-1*getAlfaR()*(1/resistenciaColetor));
-                condutancia[getNoC()][getNoB()] += (-1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)));
-
-                correntes[getNoA()] += (correnteColetor - (getAlfa()*correnteEmissor));
-                correntes[getNoB()] += ((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) - correnteEmissor - correnteColetor);
-                correntes[getNoC()] += (correnteEmissor - (getAlfaR()*correnteColetor));
+                /**
+                 * Initializa os diodos para modelagem Ebers-moll
+                 */
+                Diodo *diodoBaseEmissor = new Diodo(
+                    "dbe", getNoB(), getNoC(), getIsBaseEmissor(), getNVtBaseEmissor()
+                );
+                Diodo *diodoBaseColetor = new Diodo(
+                    "dbc", getNoB(), getNoA(), getIsBaseColetor(), getNVtBaseColetor()
+                );
+                /**
+                 * estampa os diodos
+                 */
+                diodoBaseEmissor->estampar(condutancia, correntes, nodes, resultado);
+                diodoBaseColetor->estampar(condutancia, correntes, nodes, resultado);
+                /**
+                 * Parametros do diodo
+                 */
+                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
+                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
+                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
+                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
+                /**
+                 * Initializa as fontes de corrente
+                 */
+                CorrenteDC *correnteAlfaIe = new CorrenteDC(
+                    "aie", getNoA(), getNoB(), getAlfa()*correnteEmissor
+                );
+                CorrenteDC *correnteAlfaRIc = new CorrenteDC(
+                    "aie", getNoC(), getNoB(), getAlfaR()*correnteColetor
+                );
+                /**
+                 * Estampa fontes de corrente
+                 */
+                correnteAlfaIe->estampar(condutancia, correntes, nodes, resultado);
+                correnteAlfaRIc->estampar(condutancia, correntes, nodes, resultado);
+                /**
+                 * Initializa as fontes de corrente controladas
+                 */
+                CorrenteTensao *correnteAlfaGeVbe = new CorrenteTensao(
+                    "aie", getNoA(), getNoB(), getNoB(), getNoC(), getAlfa()*(1/resistenciaEmissor)
+                );
+                CorrenteTensao *correnteAlfaRGcVbc = new CorrenteTensao(
+                    "aie", getNoC(), getNoB(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
+                );
+                /**
+                 * Estampa fontes de corrente
+                 */
+                correnteAlfaGeVbe->estampar(condutancia, correntes, nodes, resultado);
+                correnteAlfaRGcVbc->estampar(condutancia, correntes, nodes, resultado);
             } else if (getTipo() == "PNP") {
-                condutancia[getNoA()][getNoB()] += (-1/resistenciaColetor + -1*(getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoA()][getNoC()] += ((getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoB()][getNoA()] += (-1/resistenciaColetor + -1*(getAlfaR()*(1/resistenciaColetor)));
-                condutancia[getNoB()][getNoB()] += (1/resistenciaColetor + 1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)) +
-                    (getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoB()][getNoC()] += (-1/resistenciaEmissor + -1*(getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoC()][getNoA()] += (getAlfaR()*(1/resistenciaColetor));
-                condutancia[getNoC()][getNoB()] += (-1/resistenciaEmissor + -1*(getAlfaR()*(1/resistenciaColetor)));
-
-                correntes[getNoA()] += ((getAlfa()*correnteEmissor) - correnteColetor);
-                correntes[getNoB()] += (correnteEmissor + correnteColetor + -1*(getAlfa()*correnteEmissor) + -1*(getAlfaR()*correnteColetor));
-                correntes[getNoC()] += ((getAlfaR()*correnteColetor) - correnteEmissor);
+                /**
+                 * Initializa os diodos para modelagem Ebers-moll
+                 */
+                Diodo *diodoBaseEmissor = new Diodo(
+                    "dbe", getNoC(), getNoB(), getIsBaseEmissor(), getNVtBaseEmissor()
+                );
+                Diodo *diodoBaseColetor = new Diodo(
+                    "dbc", getNoA(), getNoB(), getIsBaseColetor(), getNVtBaseColetor()
+                );
+                /**
+                 * estampa os diodos
+                 */
+                diodoBaseEmissor->estampar(condutancia, correntes, nodes, resultado);
+                diodoBaseColetor->estampar(condutancia, correntes, nodes, resultado);
+                /**
+                 * Parametros do diodo
+                 */
+                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
+                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
+                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
+                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
+                /**
+                 * Initializa as fontes de corrente
+                 */
+                CorrenteDC *correnteAlfaIe = new CorrenteDC(
+                    "aie", getNoB(), getNoA(), getAlfa()*correnteEmissor
+                );
+                CorrenteDC *correnteAlfaRIc = new CorrenteDC(
+                    "aie", getNoB(), getNoC(), getAlfaR()*correnteColetor
+                );
+                /**
+                 * Estampa fontes de corrente
+                 */
+                correnteAlfaIe->estampar(condutancia, correntes, nodes, resultado);
+                correnteAlfaRIc->estampar(condutancia, correntes, nodes, resultado);
+                /**
+                 * Initializa as fontes de corrente controladas
+                 */
+                CorrenteTensao *correnteAlfaGeVbe = new CorrenteTensao(
+                    "aie", getNoB(), getNoA(), getNoB(), getNoC(), getAlfa()*(1/resistenciaEmissor)
+                );
+                CorrenteTensao *correnteAlfaRGcVbc = new CorrenteTensao(
+                    "aie", getNoB(), getNoC(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
+                );
+                /**
+                 * Estampa fontes de corrente
+                 */
+                correnteAlfaGeVbe->estampar(condutancia, correntes, nodes, resultado);
+                correnteAlfaRGcVbc->estampar(condutancia, correntes, nodes, resultado);
             } else {
                 throw invalid_argument("Tipo de transistor desconhecido");
             }
@@ -263,54 +324,108 @@ class Bipolar : public Components4t
             if (getNoC() == 0) {
                 tensaoRamoVBE = 1*resultado[getNoB()]; // Tensao VBE
             }
-            /**
-             * Initializa os diodos para modelagem Ebers-moll
-             */
-            Diodo *diodoBaseEmissor = new Diodo(
-                "dbe", getNoB(), getNoC(), getIsBaseEmissor(), getNVtBaseEmissor()
-            );
-            Diodo *diodoBaseColetor = new Diodo(
-                "dbc", getNoB(), getNoA(), getIsBaseColetor(), getNVtBaseColetor()
-            );
-            /**
-             * Parametros do diodo
-             */
-            double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
-            double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
-            double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
-            double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
-            /**
-             * Estampa do Bipolar
-             */
-            condutancia[getNoA()][getNoA()] += -1/resistenciaColetor;
-            condutancia[getNoC()][getNoC()] += -1/resistenciaEmissor;
+
 
             if (getTipo() == "NPN") {
-                condutancia[getNoA()][getNoB()] += -1*(-1/resistenciaColetor + (getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoA()][getNoC()] += -1*(-1*(getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoB()][getNoA()] += -1*(-1/resistenciaColetor + (getAlfaR()*(1/resistenciaColetor)));
-                condutancia[getNoB()][getNoB()] += -1*(1/resistenciaColetor + 1/resistenciaEmissor + (-1*getAlfaR()*(1/resistenciaColetor)) +
-                    (-1*(getAlfa()*(1/resistenciaEmissor))));
-                condutancia[getNoB()][getNoC()] += -1*(-1/resistenciaEmissor + (getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoC()][getNoA()] += -1*(-1*getAlfaR()*(1/resistenciaColetor));
-                condutancia[getNoC()][getNoB()] += -1*(-1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)));
-
-                correntes[getNoA()] += -1*(correnteColetor - (getAlfa()*correnteEmissor));
-                correntes[getNoB()] += -1*((getAlfa()*correnteEmissor) + (getAlfaR()*correnteColetor) - correnteEmissor - correnteColetor);
-                correntes[getNoC()] += -1*(correnteEmissor - (getAlfaR()*correnteColetor));
+                /**
+                 * Initializa os diodos para modelagem Ebers-moll
+                 */
+                Diodo *diodoBaseEmissor = new Diodo(
+                    "dbe", getNoB(), getNoC(), getIsBaseEmissor(), getNVtBaseEmissor()
+                );
+                Diodo *diodoBaseColetor = new Diodo(
+                    "dbc", getNoB(), getNoA(), getIsBaseColetor(), getNVtBaseColetor()
+                );
+                /**
+                 * destampa os diodos
+                 */
+                diodoBaseEmissor->desestampar(condutancia, correntes, resultado);
+                diodoBaseColetor->desestampar(condutancia, correntes, resultado);
+                /**
+                 * Parametros do diodo
+                 */
+                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
+                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
+                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
+                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
+                /**
+                 * Initializa as fontes de corrente
+                 */
+                CorrenteDC *correnteAlfaIe = new CorrenteDC(
+                    "aie", getNoA(), getNoB(), getAlfa()*correnteEmissor
+                );
+                CorrenteDC *correnteAlfaRIc = new CorrenteDC(
+                    "aie", getNoC(), getNoB(), getAlfaR()*correnteColetor
+                );
+                /**
+                 * DEstampa fontes de corrente
+                 */
+                correnteAlfaIe->desestampar(condutancia, correntes, resultado);
+                correnteAlfaRIc->desestampar(condutancia, correntes, resultado);
+                /**
+                 * Initializa as fontes de corrente controladas
+                 */
+                CorrenteTensao *correnteAlfaGeVbe = new CorrenteTensao(
+                    "aie", getNoA(), getNoB(), getNoB(), getNoC(), getAlfa()*(1/resistenciaEmissor)
+                );
+                CorrenteTensao *correnteAlfaRGcVbc = new CorrenteTensao(
+                    "aie", getNoC(), getNoB(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
+                );
+                /**
+                 * Estampa fontes de corrente
+                 */
+                correnteAlfaGeVbe->desestampar(condutancia, correntes, resultado);
+                correnteAlfaRGcVbc->desestampar(condutancia, correntes, resultado);
             } else if (getTipo() == "PNP") {
-                condutancia[getNoA()][getNoB()] += -1*(-1/resistenciaColetor + -1*(getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoA()][getNoC()] += -1*((getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoB()][getNoA()] += -1*(-1/resistenciaColetor + -1*(getAlfaR()*(1/resistenciaColetor)));
-                condutancia[getNoB()][getNoB()] += -1*(1/resistenciaColetor + 1/resistenciaEmissor + (getAlfaR()*(1/resistenciaColetor)) +
-                    (getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoB()][getNoC()] += -1*(-1/resistenciaEmissor + -1*(getAlfa()*(1/resistenciaEmissor)));
-                condutancia[getNoC()][getNoA()] += -1*(getAlfaR()*(1/resistenciaColetor));
-                condutancia[getNoC()][getNoB()] += -1*(-1/resistenciaEmissor + -1*(getAlfaR()*(1/resistenciaColetor)));
-
-                correntes[getNoA()] += -1*((getAlfa()*correnteEmissor) - correnteColetor);
-                correntes[getNoB()] += -1*(correnteEmissor + correnteColetor + -1*(getAlfa()*correnteEmissor) + -1*(getAlfaR()*correnteColetor));
-                correntes[getNoC()] += -1*((getAlfaR()*correnteColetor) - correnteEmissor);
+                /**
+                 * Initializa os diodos para modelagem Ebers-moll
+                 */
+                Diodo *diodoBaseEmissor = new Diodo(
+                    "dbe", getNoC(), getNoB(), getIsBaseEmissor(), getNVtBaseEmissor()
+                );
+                Diodo *diodoBaseColetor = new Diodo(
+                    "dbc", getNoA(), getNoB(), getIsBaseColetor(), getNVtBaseColetor()
+                );
+                /**
+                 * destampa os diodos
+                 */
+                diodoBaseEmissor->desestampar(condutancia, correntes, resultado);
+                diodoBaseColetor->desestampar(condutancia, correntes, resultado);
+                /**
+                 * Parametros do diodo
+                 */
+                double correnteColetor = diodoBaseColetor->getCorrente(tensaoRamoVBC);
+                double resistenciaColetor = diodoBaseColetor->getResistencia(tensaoRamoVBC);
+                double correnteEmissor = diodoBaseEmissor->getCorrente(tensaoRamoVBE);
+                double resistenciaEmissor = diodoBaseEmissor->getResistencia(tensaoRamoVBE);
+                /**
+                 * Initializa as fontes de corrente
+                 */
+                CorrenteDC *correnteAlfaIe = new CorrenteDC(
+                    "aie", getNoB(), getNoA(), getAlfa()*correnteEmissor
+                );
+                CorrenteDC *correnteAlfaRIc = new CorrenteDC(
+                    "aie", getNoB(), getNoC(), getAlfaR()*correnteColetor
+                );
+                /**
+                 * DEstampa fontes de corrente
+                 */
+                correnteAlfaIe->desestampar(condutancia, correntes, resultado);
+                correnteAlfaRIc->desestampar(condutancia, correntes, resultado);
+                /**
+                 * Initializa as fontes de corrente controladas
+                 */
+                CorrenteTensao *correnteAlfaGeVbe = new CorrenteTensao(
+                    "aie", getNoB(), getNoA(), getNoB(), getNoC(), getAlfa()*(1/resistenciaEmissor)
+                );
+                CorrenteTensao *correnteAlfaRGcVbc = new CorrenteTensao(
+                    "aie", getNoB(), getNoC(), getNoB(), getNoA(), getAlfaR()*(1/resistenciaColetor)
+                );
+                /**
+                 * Estampa fontes de corrente
+                 */
+                correnteAlfaGeVbe->desestampar(condutancia, correntes, resultado);
+                correnteAlfaRGcVbc->desestampar(condutancia, correntes, resultado);
             } else {
                 throw invalid_argument("Tipo de transistor desconhecido");
             }
