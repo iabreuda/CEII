@@ -47,8 +47,6 @@ class CorrenteCorrente : public FontesControladas
             condutancia[getNoB()][pos] += -1*getGanho();
             condutancia[getNoC()][pos] += 1;
             condutancia[getNoD()][pos] += -1;
-            condutancia[pos][getNoC()] += -1;
-            condutancia[pos][getNoD()] += 1;
         }
 };
 
