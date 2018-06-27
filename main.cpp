@@ -84,6 +84,7 @@ int main()
     vector<string> nodes;
     nodes = components->getAllNodes();
     nos = nodes.size();
+    vector<string> nosSaida = components->getNosdeSaida();
     int numeroComponentes = components->getComponents().size();
 
     vector<Components*> listaDeComponetesAnterior(numeroComponentes);
@@ -92,8 +93,8 @@ int main()
 
     ofstream outfile ("resultados.tab");
     outfile << "t";
-    for(int n = 1; n < nos; n++) {
-        outfile << " " << nodes[n];
+    for(unsigned int n = 1; n < nosSaida.size(); n++) {
+        outfile << " " << nosSaida[n];
     }
     outfile << endl;
     for (double t = components->getTempo(); t <= components->getTempoFinal() + 10e-15; t += components->getPasso()) { // 10e-15 para comparacao com double
@@ -140,7 +141,7 @@ int main()
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
         resultadoAnterior = resultado;
-        resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents());
+        resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes);
 
         /**
          * Teste de adicionar a corrente apos o calculo
@@ -193,7 +194,7 @@ int main()
                     }
                 }
                 resultadoAnterior = resultado;
-                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents());
+                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes);
 
                 converge = comparar(resultadoAnterior, resultado);
                 if (converge == true) {
