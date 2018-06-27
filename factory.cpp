@@ -163,6 +163,34 @@ class Factory
         }
 
         /**
+         * retorna os de nos de tensao
+         */
+        vector<string> getNosdeSaida()
+        {
+            int numeroComponentes = componentes.size();
+            vector<string> allNodes;
+
+            for (int index = 0; index < numeroComponentes; index++) {
+                nodes.push_back(to_string(componentes[index]->getNoA()));
+                nodes.push_back(to_string(componentes[index]->getNoB()));
+                if (componentes[index]->getNos() == 4) {
+                    nodes.push_back(to_string(componentes[index]->getNoC()));
+                    nodes.push_back(to_string(componentes[index]->getNoD()));
+                }
+            }
+            sort(nodes.begin(), nodes.end(), numeric_string_compare);
+            nodes.erase(unique(nodes.begin(), nodes.end()), nodes.end());
+
+            sort(nosSaida.begin(), nosSaida.end());
+            nosSaida.erase(unique(nosSaida.begin(), nosSaida.end()), nosSaida.end());
+
+            allNodes.insert(allNodes.end(), nodes.begin(), nodes.end());
+            allNodes.insert(allNodes.end(), nosSaida.begin(), nosSaida.end());
+
+            return allNodes;
+        }
+
+        /**
          * Retorna o numero de nos auxiliares adicionados por
          * alguns componentes
          */
@@ -311,6 +339,10 @@ class Factory
          */
         vector<string> auxNodes;
         /**
+         * nos que aparecem no resultado
+         */
+        vector<string> nosSaida;
+        /**
          * lista contendo instancia de todos os componentes
          */
         vector<Components*> componentes;
@@ -355,6 +387,7 @@ class Factory
                     component->setPasso(0);
                 }
                 auxNodes.push_back("j" + component->getNome());
+                nosSaida.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
                 componentes.push_back(component);
             } else if (type == "E") {
                 TensaoTensao *component = new TensaoTensao( // Constroi uma fonte de tensao controlada por tensao
@@ -378,6 +411,7 @@ class Factory
                 );
                 componentes.push_back(component);
                 auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
+                nosSaida.push_back("jx" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "G") {
                 CorrenteTensao *component = new CorrenteTensao( // Constroi uma fonte de corrente controlada por tensao
                     element[0],
@@ -399,7 +433,7 @@ class Factory
                 );
                 componentes.push_back(component);
                 auxNodes.push_back("jx" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
-                auxNodes.push_back("jy" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
+                nosSaida.push_back("jx" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "O") {
                 AmpOp *component = new AmpOp(
                     element[0],
@@ -430,6 +464,7 @@ class Factory
                 );
                 componentes.push_back(component);
                 auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
+                nosSaida.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "Q") {
                 Bipolar *component = new Bipolar( // Constroi um Bipolar
                     element[0],

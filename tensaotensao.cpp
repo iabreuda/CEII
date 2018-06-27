@@ -43,8 +43,6 @@ class TensaoTensao : public FontesControladas
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
 
-            condutancia[getNoA()][pos] += 1;
-            condutancia[getNoB()][pos] += -1;
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
             condutancia[pos][getNoC()] += getGanho();

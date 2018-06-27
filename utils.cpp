@@ -24,6 +24,10 @@
  *  - sort
  */
 #include <algorithm>
+/**
+ * Modelo basico para componentes
+ */
+#include "components.cpp"
 
 /* Necessario para nao precisar escrever std:: */
 using namespace std;
@@ -53,11 +57,156 @@ const vector<string> explode(const string& phrase, char delim)
  * e a matriz de corrente, aplica a eliminacao de gauss para transformar a matriz
  * de condutividade em uma matriz identidade.
  */
-vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos)
+vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos, vector<Components*> componentes, vector<string> nodes)
 {
+    int numeroComponentes = componentes.size();
+    vector<vector<int> > somaLinhas(nos, vector<int>(nos, 0));
+    vector<vector<int> > somaColunas(nos, vector<int>(nos, 0));
+    /**
+     * Deleta coluna adicionada pela fonte de tensao reduzida na matriz de condutancai
+     */
+    for (int i = 0; i < numeroComponentes; i++) {
+        if (componentes[i]->getNome().substr(0,1) == "V") {
+            vector<string>::iterator it;
+            it = find(nodes.begin(), nodes.end(), componentes[i]->getAuxNode());
+            unsigned int pos = it - nodes.begin();
+            if (pos < nodes.size()) {
+                nodes.erase(nodes.begin() + pos);
+                for (unsigned int linha = 0; linha < condutancia.size(); linha++) {
+                    condutancia[linha].erase(condutancia[linha].begin() + pos);
+                }
+            }
+        }
+    }
+    /**
+     * Delete linha adicionada pela fonte de corrente controlada por corrente
+     * na matriz de condutancia
+     */
+    for (int i = 0; i < numeroComponentes; i++) {
+        if (componentes[i]->getNome().substr(0,1) == "F") {
+           vector<string>::iterator it;
+            it = find(nodes.begin(), nodes.end(), componentes[i]->getAuxNode());
+            unsigned int pos = it - nodes.begin();
+            if (pos < nodes.size()) {
+                nodes.erase(nodes.begin() + pos);
+                condutancia.erase(condutancia.begin() + pos);
+                correntes.erase(correntes.begin() + pos);
+            }
+        }
+    }
+    /**
+     * Montar matriz do que tem que ser somado
+     */
+    for (int i = 0; i < numeroComponentes; i++) {
+        if (componentes[i]->getNome().substr(0,1) == "V" || // Tensao
+            componentes[i]->getNome().substr(0,1) == "E" || // Tensao por tensao ou Amp de Tensao
+            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+                somaLinhas[componentes[i]->getNoA()][componentes[i]->getNoB()] = 1;
+                somaLinhas[componentes[i]->getNoB()][componentes[i]->getNoA()] = 1;
+        }
+        if (componentes[i]->getNome().substr(0,1) == "F" || // Corrente por corrente ou Amp de Corrente
+            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+                somaColunas[componentes[i]->getNoD()][componentes[i]->getNoC()] = 1;
+                somaColunas[componentes[i]->getNoC()][componentes[i]->getNoD()] = 1;
+        }
+    }
+    /**
+     * Cria uma matriz de linhas para serem somadas com a reducao por AmpOp
+     */
+    for (unsigned int linha = 0; linha < somaLinhas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaLinhas[linha].size(); coluna++) {
+            if (somaLinhas[linha][coluna] == 1) {
+                for (unsigned int col = 0; col < somaLinhas[coluna].size(); col++) {
+                    if (somaLinhas[coluna][col] == 1 && col != linha) {
+                        somaLinhas[linha][col] = 1;
+                        somaLinhas[coluna][col] = 0;
+                    } else if (col == linha) {
+                        somaLinhas[coluna][col] = 0;
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Realiza as reducoes do ampop em relacao as linhas
+     */
+    for (unsigned int linha = 0; linha < somaLinhas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaLinhas[linha].size(); coluna++) {
+            if (linha == 0 && somaLinhas[linha][coluna] == 1) {
+                condutancia[coluna] = {83415049}; // valor que significa que essa linha deve ser deletada
+                correntes[coluna] = 83415049;
+            } else if (somaLinhas[linha][coluna] == 1) {
+                for (unsigned int aux = 0; aux < condutancia[linha].size(); aux++) { // Soma cada coluna das linhas iguais
+                    condutancia[linha][aux] += condutancia[coluna][aux];
+                    if (aux == 0) { // So faz a corrente no primeiro loop
+                        correntes[linha] += correntes[coluna];
+                        correntes[coluna] = 83415049;
+                    }
+                }
+                condutancia[coluna] = {83415049}; // valor que significa que essa linha deve ser deletada
+            }
+        }
+    }
+    /**
+     * Deleta o valor referente a linha a ser deletada
+     */
+    for (unsigned int linha = 0; linha < condutancia.size(); linha++) {
+        for (unsigned int col = 0; col < condutancia[linha].size(); col++) {
+            if (condutancia[linha].size() == 1 && condutancia[linha][col] == 83415049) {
+                condutancia.erase(condutancia.begin() + linha);
+                correntes.erase(correntes.begin() + linha);
+                linha--;
+            }
+        }
+    }
+    /**
+     * Cria uma matriz de colunas para serem somadas com a reducao por AmpOp
+     */
+    for (unsigned int linha = 0; linha < somaColunas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaColunas[linha].size(); coluna++) {
+            if (somaColunas[linha][coluna] == 1) {
+                for (unsigned int col = 0; col < somaColunas[coluna].size(); col++) {
+                    if (somaColunas[coluna][col] == 1 && col != linha) {
+                        somaColunas[linha][col] = 1;
+                        somaColunas[coluna][col] = 0;
+                    } else if (col == linha) {
+                        somaColunas[coluna][col] = 0;
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Realiza as reducoes do ampop em relacao as colunas
+     */
+    for (unsigned int linha = 0; linha < somaColunas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaColunas[linha].size(); coluna++) {
+            if (linha == 0 && somaColunas[linha][coluna] == 1) {
+                for (unsigned int aux = 0; aux < condutancia[linha].size(); aux++) {
+                    condutancia[aux][coluna] = 83415049;
+                }
+            } else if (somaColunas[linha][coluna] == 1) {
+                for (unsigned int aux = 0; aux < condutancia.size(); aux++) { // Soma cada coluna das linhas iguais
+                    condutancia[aux][linha] += condutancia[aux][coluna];
+                    condutancia[aux][coluna] = 83415049;
+                }
+            }
+        }
+    }
+    /**
+     * Deleta o valor referente a coluna a ser deletada na matriz de condutancia
+     */
+    for (unsigned int linha = 0; linha < condutancia.size(); linha++) {
+        for (unsigned int col = 0; col < condutancia[linha].size(); col++) {
+            if (condutancia[linha][col] == 83415049) {
+                condutancia[linha].erase(condutancia[linha].begin() + col);
+                col--;
+            }
+        }
+    }
+
     int condutanciaRows = condutancia.size();
     int correnteRows = correntes.size();
-
     /**
      * Matrizes de condutancia e conrrente devem ter os
      * mesmos numeros de linhas
@@ -112,7 +261,22 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
             }
         }
     }
-
+    /**
+     * Adiciona os nos correspondentes as mesmas tensoes
+     * na matriz de resultado
+     */
+    unsigned int colAnterior = 0;
+    for (unsigned int linha = 1; linha < somaColunas.size(); linha++) { // desconsidera o no 0
+        for (unsigned int coluna = 1; coluna < somaColunas[linha].size(); coluna++) {
+            if (somaColunas[linha][coluna] == 1 ) {
+                correntes.insert(correntes.begin() + coluna, correntes[linha]);
+                if (colAnterior > coluna) {
+                    swap(correntes[colAnterior + 1], correntes[colAnterior]);
+                }
+                colAnterior = coluna;
+            }
+        }
+    }
     return correntes;
 }
 
