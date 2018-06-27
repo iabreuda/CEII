@@ -94,6 +94,10 @@ class Components
         }
 
         /**
+         * Elimina nos virtuais desnecessarios
+         */
+        string virtual getAuxNode() { return "j" + getNome();};
+        /**
          * Metodos virtuais utilizados por componentes de 4 terminais
          */
         int virtual getNoC() {return 0;};
