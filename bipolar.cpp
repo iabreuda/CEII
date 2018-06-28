@@ -31,6 +31,7 @@ class Bipolar : public Components4t
             double isbe, double nvtbe , double isbc,
             double nvtbc) : Components4t(n, a, b, c, d)
         {
+            setLinearidade(false);
             setTipo(t);
             setAlfa(alfa);
             setAlfaR(alfar);
