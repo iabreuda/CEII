@@ -261,22 +261,19 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
             }
         }
     }
+
     /**
      * Adiciona os nos correspondentes as mesmas tensoes
      * na matriz de resultado
      */
-    unsigned int colAnterior = 0;
-    for (unsigned int linha = 1; linha < somaColunas.size(); linha++) { // desconsidera o no 0
-        for (unsigned int coluna = 1; coluna < somaColunas[linha].size(); coluna++) {
+    for (unsigned int coluna = 1; coluna < somaColunas[0].size(); coluna++) { // Matriz tem que ser quadrada
+        for (unsigned int linha = 1; linha < somaColunas.size(); linha++) { // desconsidera o no 0
             if (somaColunas[linha][coluna] == 1 ) {
                 correntes.insert(correntes.begin() + coluna, correntes[linha]);
-                if (colAnterior > coluna) {
-                    swap(correntes[colAnterior + 1], correntes[colAnterior]);
-                }
-                colAnterior = coluna;
             }
         }
     }
+
     return correntes;
 }
 
