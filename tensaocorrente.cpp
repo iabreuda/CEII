@@ -49,7 +49,6 @@ class TensaoCorrente : public FontesControladas
             vector<double> resultado)
         {
             vector<string>::iterator it;
-            vector<string>::iterator it2;
 
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
