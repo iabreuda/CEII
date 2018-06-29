@@ -62,6 +62,8 @@ class Diodo : public Components
         {
             if (tensao > 0.8) {
                 tensao = 0.8; // Limita o valor da tensao em 0.8
+            } else if (tensao < -0.8) {
+                tensao = -0.8;
             }
             return 1/((getCorrenteReversa() * exp(tensao / getTensaoTemp())) / getTensaoTemp());
         }
@@ -73,6 +75,8 @@ class Diodo : public Components
         {
             if (tensao > 0.8) {
                 tensao = 0.8; // Limita o valor da tensao em 0.8
+            } else if (tensao < -0.8) {
+                tensao = -0.8;
             }
             return (getCorrenteReversa() * (exp(tensao / getTensaoTemp()) - 1)) - (1/getResistencia(tensao) * tensao);
         }
