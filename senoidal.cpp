@@ -32,7 +32,7 @@ class Senoidal : public FonteIndependente
         Senoidal(string n, int a, int b,
             double a0, double amp, double f,
             double delay, double damp, double p,
-            double cic, double t) : FonteIndependente(n, a, b)
+            double cic) : FonteIndependente(n, a, b)
         {
             setNivelDC(a0);
             setAmplitude(amp);
@@ -41,8 +41,6 @@ class Senoidal : public FonteIndependente
             setAmortecimento(damp);
             setFase(p);
             setCiclos(cic);
-            setTempo(t);
-            setValor();
         }
 
         /**
@@ -109,16 +107,6 @@ class Senoidal : public FonteIndependente
         }
 
         /**
-         * Define o instante de tempo atual
-         * @param t tempo
-         */
-        void setTempo(double t)
-        {
-            tempo = t;
-        }
-
-
-        /**
          * Retorna o nivel DC
          */
         double getNivelDC()
@@ -175,17 +163,9 @@ class Senoidal : public FonteIndependente
         }
 
         /**
-         * Retorna tempo atual
-         */
-        double getTempo()
-        {
-            return tempo;
-        }
-
-        /**
          * Retorna a valor da fonte
          */
-        void setValor()
+        void setValor(double tempo)
         {
             float amplitude;
             float senoide;
@@ -243,11 +223,6 @@ class Senoidal : public FonteIndependente
          * Ciclos da fonte
          */
         double ciclos;
-
-        /**
-         * Tempo atual
-         */
-        double tempo;
 };
 
 #endif

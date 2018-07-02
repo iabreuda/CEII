@@ -23,7 +23,7 @@ class Pulso : public FonteIndependente
         Pulso(string n, int a, int b,
             double a1, double a2, double delay,
             double tSub, double tDes, double tOn,
-            double per, double cic, double t, double p) : FonteIndependente(n, a, b)
+            double per, double cic, double p) : FonteIndependente(n, a, b)
         {
             setAmp1(a1);
             setAmp2(a2);
@@ -33,9 +33,7 @@ class Pulso : public FonteIndependente
             setTempoLigada(tOn);
             setPeriodo(per);
             setCiclo(cic);
-            setTempo(t);
             setPasso(p);
-            setValor();
         }
 
         /**
@@ -121,15 +119,6 @@ class Pulso : public FonteIndependente
         }
 
         /**
-         * Define o instante de tempo atual
-         * @param t instante de tempo atual
-         */
-        void setTempo(double t)
-        {
-            tempo = t;
-        }
-
-        /**
          * Retorna a amplitude 1
          */
         double getAmp1()
@@ -202,18 +191,10 @@ class Pulso : public FonteIndependente
         }
 
         /**
-         * Retorna o instante de tempo atual
-         */
-        double getTempo()
-        {
-            return tempo;
-        }
-
-        /**
          * Define o valor atual da fonte
          * no instante de tempo presente
          */
-        void setValor()
+        void setValor(double tempo)
         {
             /**
              * Modela casos em que o tempo de subida e descida
@@ -306,10 +287,6 @@ class Pulso : public FonteIndependente
          */
         double ciclo;
 
-        /**
-         * Instante de tempo atual
-         */
-        double tempo;
         /**
          * Valor da tensao em um determinado
          * instante de tempo

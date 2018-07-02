@@ -119,12 +119,16 @@ class Indutor : public Components
             condutancia[getNoB()][pos] += -1;
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
-
             /**
              * Valores que sao variaves no instante de tempo inicial e no
              * resto da analise
              */
-            if (passo != 0) {
+            if (getTempo() == 0) {
+                condutancia[getNoA()][getNoA()] += 10e9;
+                condutancia[getNoB()][getNoB()] += 10e9;
+                condutancia[getNoA()][getNoB()] += -10e9;
+                condutancia[getNoB()][getNoA()] += -10e9;
+            } else {
                 /**
                  * Tensao no instante de tempo anterior
                  */
@@ -143,11 +147,6 @@ class Indutor : public Components
 
                 condutancia[pos][pos] += (getIndutancia()) / (passo * getTeta());
                 correntes[pos] += (((getIndutancia()) / (passo * getTeta())) * corrente) +  (((1 - getTeta())/(getTeta())) * tensaoRamo);
-            } else {
-                condutancia[getNoA()][getNoA()] += 10e9;
-                condutancia[getNoB()][getNoB()] += 10e9;
-                condutancia[getNoA()][getNoB()] += -10e9;
-                condutancia[getNoB()][getNoA()] += -10e9;
             }
         }
 

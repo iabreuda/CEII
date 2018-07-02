@@ -106,7 +106,13 @@ class Capacitor : public Components
              * e correntes zeradas, no caso do capacitor, ele possui uma condutancia infinita
              * para todo os outros casos consideramos a estampa normal do modelo de trapezio
              */
-            if (passo != 0) {
+            if (getTempo() == 0) {
+                condutancia[getNoA()][getNoA()] += 10e-9;
+                condutancia[getNoB()][getNoB()] += 10e-9;
+                condutancia[getNoA()][getNoB()] += -10e-9;
+                condutancia[getNoB()][getNoA()] += -10e-9;
+
+            } else {
                 /**
                  * Pega a tensao no ramo no instante de tempo anterior
                  */
@@ -134,11 +140,6 @@ class Capacitor : public Components
                  * atual
                  */
                 setCorrente(((getCapacitancia()/(passo * getTeta())) * tensaoRamo) + (((1 - getTeta())/ getTeta()) * getCorrente()));
-            } else {
-                condutancia[getNoA()][getNoA()] += 10e-9;
-                condutancia[getNoB()][getNoB()] += 10e-9;
-                condutancia[getNoA()][getNoB()] += -10e-9;
-                condutancia[getNoB()][getNoA()] += -10e-9;
             }
 
         }

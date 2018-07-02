@@ -60,7 +60,6 @@ int main()
             repeat = false;
         }
     } while (repeat == true);
-
     /**
      * Lista de elementos a serem construidos
      * @param  myNet Arquivo da netlist
@@ -90,6 +89,11 @@ int main()
     vector<Components*> listaDeComponetesAnterior(numeroComponentes);
     vector<double> resultado(nos);
     vector<double> resultadoAnterior(nos);
+    /**
+     * Linhas e colunas que devem ser somadas pela reducao de ampOp
+     */
+    vector<vector<int> > somaLinhas = linhasSomadas(components->getComponents(), components->getNodesSize());
+    vector<vector<int> > somaColunas = colunasSomadas(components->getComponents(), components->getNodesSize());
 
     ofstream outfile ("resultados.tab");
     outfile << "t";
@@ -104,16 +108,13 @@ int main()
          */
         vector<vector<double> > condutancia(nos, vector<double>(nos));
         vector<double> correntes(nos);
-        components->setTempo(t);
-        /**
-         * Criar a lista de elementos.
-         */
-        components->setup(elementsList->getElements());
+
         /**
          * Verificar se alguns dos componentes e um capacitor
          * para definir uma corrente inicial.
          */
         for (int i = 0; i < numeroComponentes; i++) {
+            components->getComponents()[i]->setTempo(t);
             /**
              * Verificar se existe algum componente nao linear
              */
@@ -141,7 +142,7 @@ int main()
             components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
         }
         resultadoAnterior = resultado;
-        resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes);
+        resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes, somaLinhas, somaColunas);
 
         /**
          * Teste de adicionar a corrente apos o calculo
@@ -194,7 +195,7 @@ int main()
                     }
                 }
                 resultadoAnterior = resultado;
-                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes);
+                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes, somaLinhas, somaColunas);
 
                 converge = comparar(resultadoAnterior, resultado);
                 if (converge == true) {

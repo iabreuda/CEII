@@ -34,7 +34,7 @@ class FonteIndependente : public Components
         /**
          * Funcao abstrata que deve ser declarada nas classes filhas
          */
-        virtual void setValor() {};
+        virtual void setValor(double t) {};
 };
 
 #endif

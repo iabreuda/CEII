@@ -19,8 +19,8 @@ class CorrentePulso : public Pulso
         CorrentePulso(string n, int a, int b,
             double a1, double a2, double delay,
             double tSub, double tDes, double tOn,
-            double per, double cic, double t, double p) :
-            Pulso(n, a, b, a1, a2, delay, tSub, tDes, tOn, per, cic, t, p)
+            double per, double cic, double p) :
+            Pulso(n, a, b, a1, a2, delay, tSub, tDes, tOn, per, cic, p)
         {
         }
 
@@ -35,6 +35,7 @@ class CorrentePulso : public Pulso
             vector<string> nodes,
             vector<double> resultado)
         {
+            setValor(getTempo());
             correntes[getNoA()] += -1*getValor();
             correntes[getNoB()] += getValor();
         }

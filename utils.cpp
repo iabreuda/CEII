@@ -52,16 +52,86 @@ const vector<string> explode(const string& phrase, char delim)
     return result;
 }
 
+vector<vector<int> > linhasSomadas(vector<Components*> componentes, int nos)
+{
+    vector<vector<int> > somaLinhas(nos, vector<int>(nos, 0));
+    int numeroComponentes = componentes.size();
+    /**
+     * Montar matriz do que tem que ser somado
+     */
+    for (int i = 0; i < numeroComponentes; i++) {
+        if (componentes[i]->getNome().substr(0,1) == "V" || // Tensao
+            componentes[i]->getNome().substr(0,1) == "E" || // Tensao por tensao ou Amp de Tensao
+            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+                somaLinhas[componentes[i]->getNoA()][componentes[i]->getNoB()] = 1;
+                somaLinhas[componentes[i]->getNoB()][componentes[i]->getNoA()] = 1;
+        }
+    }
+    /**
+     * Cria uma matriz de linhas para serem somadas com a reducao por AmpOp
+     */
+    for (unsigned int linha = 0; linha < somaLinhas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaLinhas[linha].size(); coluna++) {
+            if (somaLinhas[linha][coluna] == 1) {
+                for (unsigned int col = 0; col < somaLinhas[coluna].size(); col++) {
+                    if (somaLinhas[coluna][col] == 1 && col != linha) {
+                        somaLinhas[linha][col] = 1;
+                        somaLinhas[coluna][col] = 0;
+                    } else if (col == linha) {
+                        somaLinhas[coluna][col] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return somaLinhas;
+}
+
+vector<vector<int> > colunasSomadas(vector<Components*> componentes, int nos)
+{
+    vector<vector<int> > somaColunas(nos, vector<int>(nos, 0));
+    int numeroComponentes = componentes.size();
+    /**
+     * Montar matriz do que tem que ser somado
+     */
+    for (int i = 0; i < numeroComponentes; i++) {
+        if (componentes[i]->getNome().substr(0,1) == "F" || // Corrente por corrente ou Amp de Corrente
+            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+                somaColunas[componentes[i]->getNoD()][componentes[i]->getNoC()] = 1;
+                somaColunas[componentes[i]->getNoC()][componentes[i]->getNoD()] = 1;
+        }
+    }
+    /**
+     * Cria uma matriz de colunas para serem somadas com a reducao por AmpOp
+     */
+    for (unsigned int linha = 0; linha < somaColunas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaColunas[linha].size(); coluna++) {
+            if (somaColunas[linha][coluna] == 1) {
+                for (unsigned int col = 0; col < somaColunas[coluna].size(); col++) {
+                    if (somaColunas[coluna][col] == 1 && col != linha) {
+                        somaColunas[linha][col] = 1;
+                        somaColunas[coluna][col] = 0;
+                    } else if (col == linha) {
+                        somaColunas[coluna][col] = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    return somaColunas;
+}
+
+
 /**
  * Retorna as tensoes nodais quando voce passa a matriz de condutancia
  * e a matriz de corrente, aplica a eliminacao de gauss para transformar a matriz
  * de condutividade em uma matriz identidade.
  */
-vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos, vector<Components*> componentes, vector<string> nodes)
+vector<double> gauss(vector<vector<double> > condutancia, vector<double> correntes, int nos, vector<Components*> componentes, vector<string> nodes, vector<vector<int> > somaLinhas, vector<vector<int> >somaColunas)
 {
     int numeroComponentes = componentes.size();
-    vector<vector<int> > somaLinhas(nos, vector<int>(nos, 0));
-    vector<vector<int> > somaColunas(nos, vector<int>(nos, 0));
     /**
      * Deleta coluna adicionada pela fonte de tensao reduzida na matriz de condutancai
      */
@@ -95,39 +165,6 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         }
     }
     /**
-     * Montar matriz do que tem que ser somado
-     */
-    for (int i = 0; i < numeroComponentes; i++) {
-        if (componentes[i]->getNome().substr(0,1) == "V" || // Tensao
-            componentes[i]->getNome().substr(0,1) == "E" || // Tensao por tensao ou Amp de Tensao
-            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
-                somaLinhas[componentes[i]->getNoA()][componentes[i]->getNoB()] = 1;
-                somaLinhas[componentes[i]->getNoB()][componentes[i]->getNoA()] = 1;
-        }
-        if (componentes[i]->getNome().substr(0,1) == "F" || // Corrente por corrente ou Amp de Corrente
-            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
-                somaColunas[componentes[i]->getNoD()][componentes[i]->getNoC()] = 1;
-                somaColunas[componentes[i]->getNoC()][componentes[i]->getNoD()] = 1;
-        }
-    }
-    /**
-     * Cria uma matriz de linhas para serem somadas com a reducao por AmpOp
-     */
-    for (unsigned int linha = 0; linha < somaLinhas.size(); linha++) { // considera o no 0
-        for (unsigned int coluna = 0; coluna < somaLinhas[linha].size(); coluna++) {
-            if (somaLinhas[linha][coluna] == 1) {
-                for (unsigned int col = 0; col < somaLinhas[coluna].size(); col++) {
-                    if (somaLinhas[coluna][col] == 1 && col != linha) {
-                        somaLinhas[linha][col] = 1;
-                        somaLinhas[coluna][col] = 0;
-                    } else if (col == linha) {
-                        somaLinhas[coluna][col] = 0;
-                    }
-                }
-            }
-        }
-    }
-    /**
      * Realiza as reducoes do ampop em relacao as linhas
      */
     for (unsigned int linha = 0; linha < somaLinhas.size(); linha++) { // considera o no 0
@@ -156,23 +193,6 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
                 condutancia.erase(condutancia.begin() + linha);
                 correntes.erase(correntes.begin() + linha);
                 linha--;
-            }
-        }
-    }
-    /**
-     * Cria uma matriz de colunas para serem somadas com a reducao por AmpOp
-     */
-    for (unsigned int linha = 0; linha < somaColunas.size(); linha++) { // considera o no 0
-        for (unsigned int coluna = 0; coluna < somaColunas[linha].size(); coluna++) {
-            if (somaColunas[linha][coluna] == 1) {
-                for (unsigned int col = 0; col < somaColunas[coluna].size(); col++) {
-                    if (somaColunas[coluna][col] == 1 && col != linha) {
-                        somaColunas[linha][col] = 1;
-                        somaColunas[coluna][col] = 0;
-                    } else if (col == linha) {
-                        somaColunas[coluna][col] = 0;
-                    }
-                }
             }
         }
     }

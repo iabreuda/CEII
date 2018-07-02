@@ -19,7 +19,7 @@ class CorrenteSenoidal : public Senoidal
         CorrenteSenoidal(string n, int a, int b,
             double a0, double amp, double f,
             double delay, double damp, double p,
-            double cic, double t) : Senoidal(n, a, b, a0, amp, f, delay, damp, p, cic, t)
+            double cic) : Senoidal(n, a, b, a0, amp, f, delay, damp, p, cic)
         {
         }
 
@@ -34,6 +34,7 @@ class CorrenteSenoidal : public Senoidal
             vector<string> nodes,
             vector<double> resultado)
         {
+            setValor(getTempo());
             correntes[getNoA()] += -1*getValor();
             correntes[getNoB()] += getValor();
         }

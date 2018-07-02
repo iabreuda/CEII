@@ -19,7 +19,7 @@ class TensaoSenoidal : public Senoidal
         TensaoSenoidal(string n, int a, int b,
             double a0, double amp, double f,
             double delay, double damp, double p,
-            double cic, double t) : Senoidal(n, a, b, a0, amp, f, delay, damp, p, cic, t)
+            double cic) : Senoidal(n, a, b, a0, amp, f, delay, damp, p, cic)
         {
         }
 
@@ -43,10 +43,10 @@ class TensaoSenoidal : public Senoidal
             vector<string> nodes,
             vector<double> resultado)
         {
+            setValor(getTempo());
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
-
             condutancia[pos][getNoA()] += -1;
             condutancia[pos][getNoB()] += 1;
             correntes[pos] += -1*getValor();
