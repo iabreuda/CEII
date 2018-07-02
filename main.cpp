@@ -104,16 +104,13 @@ int main()
          */
         vector<vector<double> > condutancia(nos, vector<double>(nos));
         vector<double> correntes(nos);
-        components->setTempo(t);
-        /**
-         * Criar a lista de elementos.
-         */
-        components->setup(elementsList->getElements());
+
         /**
          * Verificar se alguns dos componentes e um capacitor
          * para definir uma corrente inicial.
          */
         for (int i = 0; i < numeroComponentes; i++) {
+            components->getComponents()[i]->setTempo(t);
             /**
              * Verificar se existe algum componente nao linear
              */
