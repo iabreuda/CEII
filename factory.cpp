@@ -437,7 +437,6 @@ class Factory
                     stoi(element[4])
                 );
                 componentes.push_back(component);
-                auxNodes.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
             } else if (type == "D") {
                 Diodo *component = new Diodo( // Constroi um diodo
                     element[0],
