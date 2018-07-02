@@ -62,7 +62,8 @@ vector<vector<int> > linhasSomadas(vector<Components*> componentes, int nos)
     for (int i = 0; i < numeroComponentes; i++) {
         if (componentes[i]->getNome().substr(0,1) == "V" || // Tensao
             componentes[i]->getNome().substr(0,1) == "E" || // Tensao por tensao ou Amp de Tensao
-            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+            componentes[i]->getNome().substr(0,1) == "H" || // Tensao por corrente ou Transresistor
+            componentes[i]->getNome().substr(0,1) == "O") { // AmpOP
                 somaLinhas[componentes[i]->getNoA()][componentes[i]->getNoB()] = 1;
                 somaLinhas[componentes[i]->getNoB()][componentes[i]->getNoA()] = 1;
         }
@@ -97,7 +98,8 @@ vector<vector<int> > colunasSomadas(vector<Components*> componentes, int nos)
      */
     for (int i = 0; i < numeroComponentes; i++) {
         if (componentes[i]->getNome().substr(0,1) == "F" || // Corrente por corrente ou Amp de Corrente
-            componentes[i]->getNome().substr(0,1) == "H") { // Tensao por corrente ou Transresistor
+            componentes[i]->getNome().substr(0,1) == "H"|| // Tensao por corrente ou Transresistor
+            componentes[i]->getNome().substr(0,1) == "O") { // AmpOP
                 somaColunas[componentes[i]->getNoD()][componentes[i]->getNoC()] = 1;
                 somaColunas[componentes[i]->getNoC()][componentes[i]->getNoD()] = 1;
         }
@@ -185,6 +187,23 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
         }
     }
     /**
+     * Realiza as reducoes do ampop em relacao as colunas
+     */
+    for (unsigned int linha = 0; linha < somaColunas.size(); linha++) { // considera o no 0
+        for (unsigned int coluna = 0; coluna < somaColunas[linha].size(); coluna++) {
+            if (linha == 0 && somaColunas[linha][coluna] == 1) {
+                for (unsigned int aux = 0; aux < condutancia.size(); aux++) {
+                    condutancia[aux][coluna] = 83415049;
+                }
+            } else if (somaColunas[linha][coluna] == 1) {
+                for (unsigned int aux = 0; aux < condutancia.size(); aux++) { // Soma cada coluna das linhas iguais
+                    condutancia[aux][linha] += condutancia[aux][coluna];
+                    condutancia[aux][coluna] = 83415049;
+                }
+            }
+        }
+    }
+    /**
      * Deleta o valor referente a linha a ser deletada
      */
     for (unsigned int linha = 0; linha < condutancia.size(); linha++) {
@@ -193,23 +212,6 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
                 condutancia.erase(condutancia.begin() + linha);
                 correntes.erase(correntes.begin() + linha);
                 linha--;
-            }
-        }
-    }
-    /**
-     * Realiza as reducoes do ampop em relacao as colunas
-     */
-    for (unsigned int linha = 0; linha < somaColunas.size(); linha++) { // considera o no 0
-        for (unsigned int coluna = 0; coluna < somaColunas[linha].size(); coluna++) {
-            if (linha == 0 && somaColunas[linha][coluna] == 1) {
-                for (unsigned int aux = 0; aux < condutancia[linha].size(); aux++) {
-                    condutancia[aux][coluna] = 83415049;
-                }
-            } else if (somaColunas[linha][coluna] == 1) {
-                for (unsigned int aux = 0; aux < condutancia.size(); aux++) { // Soma cada coluna das linhas iguais
-                    condutancia[aux][linha] += condutancia[aux][coluna];
-                    condutancia[aux][coluna] = 83415049;
-                }
             }
         }
     }
@@ -306,7 +308,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
 bool comparar(vector<double> vetor1, vector<double> vetor2)
 {
     int nosIguais = 0;
-    double limite = 10e-5; //Esse limete pode ser modificado para aumentar a exatidao da comparacao
+    double limite = 10e-4; //Esse limete pode ser modificado para aumentar a exatidao da comparacao
     int sizeOne = vetor1.size();
     int sizeTwo = vetor2.size();
 
