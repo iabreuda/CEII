@@ -370,9 +370,6 @@ class Factory
                 );
                 component->setTeta(getTeta());
                 component->setPasso(getPasso());
-                if (getTempo() == 0) { //Define o passo a ser utilizado no instante 0 do capacitor
-                    component->setPasso(0);
-                }
                 componentes.push_back(component);
             } else if (type == "L") {
                 Indutor *component = new Indutor( // Constroi o indutor
@@ -383,9 +380,6 @@ class Factory
                 );
                 component->setPasso(getPasso());
                 component->setTeta(getTeta());
-                if (getTempo() == 0) { //Define o passo a ser utilizado no instante 0 do capacitor
-                    component->setPasso(0);
-                }
                 auxNodes.push_back("j" + component->getNome());
                 nosSaida.push_back("j" + component->getNome()); // Adiciona o no auxiliar de acordo com a estampa
                 componentes.push_back(component);
@@ -502,8 +496,7 @@ class Factory
                         stod(element[7]),
                         stod(element[8]),
                         stod(element[9]),
-                        stod(element[10]),
-                        tempo
+                        stod(element[10])
                     );
                     componentes.push_back(component); // Adiciona o no auxiliar de acordo com a estampa
                     auxNodes.push_back("j" + component->getNome());
@@ -520,7 +513,6 @@ class Factory
                         stod(element[9]),
                         stod(element[10]),
                         stod(element[11]),
-                        tempo,
                         getPasso()
                     );
                     componentes.push_back(component);
@@ -548,8 +540,7 @@ class Factory
                         stod(element[7]),
                         stod(element[8]),
                         stod(element[9]),
-                        stod(element[10]),
-                        tempo
+                        stod(element[10])
                     );
                     componentes.push_back(component);
                 } else if ((element[3]) == "PULSE") {
@@ -565,7 +556,6 @@ class Factory
                         stod(element[9]),
                         stod(element[10]),
                         stod(element[11]),
-                        tempo,
                         getPasso()
                     );
                     componentes.push_back(component);
