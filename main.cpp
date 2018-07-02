@@ -9,6 +9,11 @@
  *  - system
  */
 #include <cstdlib>
+/**
+ * Inclui:
+ *  - clock
+ */
+#include <time.h>
  /**
  * Inclui:
  *  - ifstream
@@ -61,6 +66,10 @@ int main()
         }
     } while (repeat == true);
     /**
+     * Inicia o contador de tempo
+     */
+    clock_t tStart = clock();
+    /**
      * Lista de elementos a serem construidos
      * @param  myNet Arquivo da netlist
      * @return       Vetor de vetores devidamente separados com os componentes
@@ -85,6 +94,8 @@ int main()
     nos = nodes.size();
     vector<string> nosSaida = components->getNosdeSaida();
     int numeroComponentes = components->getComponents().size();
+    int loopsDeConvergencia = 0;
+    double tempoMaxDeLoop = 0;
 
     vector<Components*> listaDeComponetesAnterior(numeroComponentes);
     vector<double> resultado(nos);
@@ -181,7 +192,7 @@ int main()
         }
         /**
          * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
-         * newton raphson e so feito no instante de tempo zero
+         * newton raphson
          */
         if (linear == false) { // @todo VERIFICAR SE VAI FUNCIONAR COM A REMOCAO DO NO
             bool converge = false;
@@ -201,6 +212,10 @@ int main()
                 if (converge == true) {
                     break;
                 }
+                if (n > loopsDeConvergencia) {
+                    loopsDeConvergencia = n;
+                    tempoMaxDeLoop = t;
+                }
             }
         }
 
@@ -216,4 +231,7 @@ int main()
         outfile << endl;
     }
     outfile.close();
+    printf("Tempo de processamento: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
+    cout << "Convergiu em: " << loopsDeConvergencia << " em t = " << tempoMaxDeLoop << endl;
+
 }
