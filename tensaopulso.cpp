@@ -19,8 +19,8 @@ class TensaoPulso : public Pulso
         TensaoPulso(string n, int a, int b,
             double a1, double a2, double delay,
             double tSub, double tDes, double tOn,
-            double per, double cic, double t, double p) :
-            Pulso(n, a, b, a1, a2, delay, tSub, tDes, tOn, per, cic, t, p)
+            double per, double cic, double p) :
+            Pulso(n, a, b, a1, a2, delay, tSub, tDes, tOn, per, cic, p)
         {
         }
 
@@ -44,6 +44,8 @@ class TensaoPulso : public Pulso
             vector<string> nodes,
             vector<double> resultado)
         {
+            setValor(getTempo());
+
             vector<string>::iterator it;
             it = find(nodes.begin(), nodes.end(), getAuxNode());
             auto pos = it - nodes.begin();
