@@ -19,6 +19,28 @@ class Components
         }
 
         /**
+         * Tempo atual
+         */
+        double tempo;
+
+        /**
+         * Retorna tempo atual
+         */
+        double virtual getTempo()
+        {
+            return tempo;
+        }
+
+        /**
+         * Define o instante de tempo atual
+         * @param t tempo
+         */
+        void virtual setTempo(double t)
+        {
+            tempo = t;
+        }
+
+        /**
          * Define o nome do componente
          * @param n nome na netlist
          */
