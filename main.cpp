@@ -137,7 +137,7 @@ int main()
              * e temos que definir a corrente que passa pelo capacitor
              */
             if (components->getComponents()[i]->getNome().substr(0,1) == "C") {
-                if (t == 0) {
+                if (t == 0 || linear == false) {
                     /**
                      * Corrente para quando o instante de tempo e zero
                      */
@@ -154,6 +154,34 @@ int main()
         }
         resultadoAnterior = resultado;
         resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes, somaLinhas, somaColunas);
+        /**
+         * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
+         * newton raphson
+         */
+        if (linear == false) { // @todo VERIFICAR SE VAI FUNCIONAR COM A REMOCAO DO NO
+            bool converge = false;
+            for (int n = 1; n <= 50; n++) {
+                for (int i = 0; i < numeroComponentes; i++) {
+                    if (components->getComponents()[i]->getNome().substr(0,1) == "D" ||
+                        components->getComponents()[i]->getNome().substr(0,1) == "Q") {
+                        /*Desestampa e reestampa componentes nao lineares*/
+                        components->getComponents()[i]->desestampar(condutancia, correntes, resultadoAnterior);
+                        components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
+                    }
+                }
+                resultadoAnterior = resultado;
+                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes, somaLinhas, somaColunas);
+
+                converge = comparar(resultadoAnterior, resultado);
+                if (n >= loopsDeConvergencia) {
+                    loopsDeConvergencia = n;
+                    tempoMaxDeLoop = t;
+                }
+                if (converge == true) {
+                    break;
+                }
+            }
+        }
 
         /**
          * Teste de adicionar a corrente apos o calculo
@@ -188,34 +216,6 @@ int main()
                     correnteResistor -
                     components->getComponents()[i]->getCorrente()
                 );
-            }
-        }
-        /**
-         * Caso a netlist possua elementos nao lineares devemos fazer newton raphson
-         * newton raphson
-         */
-        if (linear == false) { // @todo VERIFICAR SE VAI FUNCIONAR COM A REMOCAO DO NO
-            bool converge = false;
-            for (int n = 1; n <= 50; n++) {
-                for (int i = 0; i < numeroComponentes; i++) {
-                    if (components->getComponents()[i]->getNome().substr(0,1) == "D" ||
-                        components->getComponents()[i]->getNome().substr(0,1) == "Q") {
-                        /*Desestampa e reestampa componentes nao lineares*/
-                        components->getComponents()[i]->desestampar(condutancia, correntes, resultadoAnterior);
-                        components->getComponents()[i]->estampar(condutancia, correntes, nodes, resultado);
-                    }
-                }
-                resultadoAnterior = resultado;
-                resultado = gauss(condutancia, correntes, components->getNodesSize(), components->getComponents(), nodes, somaLinhas, somaColunas);
-
-                converge = comparar(resultadoAnterior, resultado);
-                if (converge == true) {
-                    break;
-                }
-                if (n > loopsDeConvergencia) {
-                    loopsDeConvergencia = n;
-                    tempoMaxDeLoop = t;
-                }
             }
         }
 
