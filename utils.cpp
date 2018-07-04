@@ -308,7 +308,7 @@ vector<double> gauss(vector<vector<double> > condutancia, vector<double> corrent
 bool comparar(vector<double> vetor1, vector<double> vetor2)
 {
     int nosIguais = 0;
-    double limite = 1e-5; //Esse limete pode ser modificado para aumentar a exatidao da comparacao
+    double limite = 1e-6; //Esse limete pode ser modificado para aumentar a exatidao da comparacao
     int sizeOne = vetor1.size();
     int sizeTwo = vetor2.size();
 
