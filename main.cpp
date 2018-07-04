@@ -137,7 +137,7 @@ int main()
              * e temos que definir a corrente que passa pelo capacitor
              */
             if (components->getComponents()[i]->getNome().substr(0,1) == "C") {
-                if (t == 0 || linear == false) {
+                if (t == 0) {
                     /**
                      * Corrente para quando o instante de tempo e zero
                      */
@@ -207,7 +207,7 @@ int main()
                 /**
                  * Pega a corrente passando no resistor no instante de tempo atual
                  */
-                double correnteResistor = ((2* components->getComponents()[i]->getCapacitancia()) / components->getPasso()) * tensaoRamo;
+                double correnteResistor = ((components->getComponents()[i]->getCapacitancia()) / (components->getTeta() * components->getPasso()) * tensaoRamo);
                 /**
                  * Pega a corrente no resistor e subtrai pela corrente na fonte de corrente no modelo
                  * do trapezio
